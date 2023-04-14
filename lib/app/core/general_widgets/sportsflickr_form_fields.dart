@@ -4,12 +4,17 @@ import 'package:sportsflickr/app/core/theme/theme.dart';
 
 class SportsflickrEmailField extends StatelessWidget {
   const SportsflickrEmailField(
-      {Key? key, this.labelText, this.validate = true, this.controller})
+      {Key? key,
+      this.labelText,
+      this.validate = true,
+      this.controller,
+      this.validator})
       : super(key: key);
 
   final String? labelText;
   final bool validate;
   final TextEditingController? controller;
+  final String? Function(String?)? validator;
 
   @override
   Widget build(BuildContext context) {
@@ -23,15 +28,16 @@ class SportsflickrEmailField extends StatelessWidget {
       },
       validator: !validate
           ? null
-          : (value) {
-              if (value!.isNotEmpty &&
-                  SportsflickrFormatter.isEmail(value) == false) {
-                return 'Please enter a valid email';
-              } else if (value.isEmpty) {
-                return 'Please enter an email';
-              }
-              return null;
-            },
+          : validator ??
+              (value) {
+                if (value!.isNotEmpty &&
+                    SportsflickrFormatter.isEmail(value) == false) {
+                  return 'Please enter a valid email';
+                } else if (value.isEmpty) {
+                  return 'Please enter an email';
+                }
+                return null;
+              },
     );
   }
 }
@@ -135,12 +141,13 @@ class _SportsflickrPasswordFieldState extends State<SportsflickrPasswordField> {
             return;
           }
         },
-        validator: (value) {
-          if (value!.isEmpty) {
-            return widget.validatorMessage ?? 'Please enter a password';
-          }
-          return null;
-        },
+        validator: widget.validator ??
+            (value) {
+              if (value!.isEmpty) {
+                return widget.validatorMessage ?? 'Please enter a password';
+              }
+              return null;
+            },
       ),
     );
   }

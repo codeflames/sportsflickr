@@ -1,14 +1,19 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sportsflickr/app/core/general_widgets/sportsflickr_appbar.dart';
 import 'package:sportsflickr/app/core/theme/theme.dart';
+import 'package:sportsflickr/app/features/login/providers/login_providers.dart';
+import 'package:sportsflickr/app/features/register/providers/register_providers.dart';
 import 'package:sportsflickr/app/features/register/view/register_view.dart';
 import 'package:sportsflickr/app/features/settings/view/about_view.dart';
 import 'package:sportsflickr/app/features/settings/view/change_password_view.dart';
 import 'package:sportsflickr/app/features/settings/view/contact_us_view.dart';
 import 'package:sportsflickr/app/features/settings/view/privacy_policy_view.dart';
 import 'package:sportsflickr/app/features/settings/view/terms_of_service_view.dart';
+import 'package:sportsflickr/app/features/settings/view/theme_settings_view.dart';
 import 'package:sportsflickr/app/features/settings/view/update_email_view.dart';
 import 'package:sportsflickr/app/features/settings/view/update_username_view.dart';
 
@@ -46,6 +51,12 @@ class SettingsView extends ConsumerWidget {
                   title: 'Update Username',
                   icon: const Icon(Icons.person_rounded, color: five36BE5),
                   onTap: () => context.goNamed(UpdateUsernameView.routeName),
+                ),
+                SizedBox(height: 16.h),
+                SettingsWidget(
+                  title: 'Theme Settings',
+                  icon: const Icon(Icons.lightbulb_rounded, color: five36BE5),
+                  onTap: () => context.goNamed(ThemeSettingsView.routeName),
                 ),
                 SizedBox(height: 16.h),
                 SettingsWidget(
@@ -101,9 +112,21 @@ class SettingsView extends ConsumerWidget {
                                   child: Text('Cancel',
                                       style: redHatDisplayRegular16)),
                               TextButton(
-                                  onPressed: () {
+                                  onPressed: () async {
                                     context.pop();
-                                    context.go(RegisterView.routeName);
+                                    try {
+                                      await FirebaseAuth.instance.signOut();
+                                      ref
+                                          .read(
+                                              loginControllerProvider.notifier)
+                                          .cleanState();
+                                      if (context.mounted) {
+                                        context.go(RegisterView.routeName);
+                                      }
+                                    } catch (e) {
+                                      EasyLoading.showError('Unable to logout');
+                                    }
+                                    //check if context is still valid
                                   },
                                   child: Text('Logout',
                                       style: redHatDisplayRegular16.copyWith(
@@ -135,10 +158,11 @@ class SettingsWidget extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
-                height: 20.h,
-                width: 20.h,
+                height: 32.h,
+                width: 32.h,
                 child: icon ?? const Icon(Icons.settings_applications_rounded)),
             SizedBox(
               width: 18.w,

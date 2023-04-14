@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -6,6 +8,9 @@ import 'package:sportsflickr/app/features/discover/view/discover_view.dart';
 import 'package:sportsflickr/app/features/forgot_password/view/forgot_password_view.dart';
 import 'package:sportsflickr/app/features/login/view/login_view.dart';
 import 'package:sportsflickr/app/features/profile/view/profile_view.dart';
+import 'package:sportsflickr/app/features/register/providers/register_providers.dart';
+import 'package:sportsflickr/app/features/register/view/add_username_and%20phone_view.dart';
+import 'package:sportsflickr/app/features/register/view/phone_code_sent.dart';
 import 'package:sportsflickr/app/features/register/view/register_view.dart';
 import 'package:sportsflickr/app/features/settings/view/about_view.dart';
 import 'package:sportsflickr/app/features/settings/view/change_password_view.dart';
@@ -13,6 +18,7 @@ import 'package:sportsflickr/app/features/settings/view/contact_us_view.dart';
 import 'package:sportsflickr/app/features/settings/view/privacy_policy_view.dart';
 import 'package:sportsflickr/app/features/settings/view/settings_view.dart';
 import 'package:sportsflickr/app/features/settings/view/terms_of_service_view.dart';
+import 'package:sportsflickr/app/features/settings/view/theme_settings_view.dart';
 import 'package:sportsflickr/app/features/settings/view/update_email_view.dart';
 import 'package:sportsflickr/app/features/settings/view/update_username_view.dart';
 
@@ -30,11 +36,20 @@ final routerProvider = Provider<GoRouter>(
       initialLocation: RegisterView.routeName,
       navigatorKey: _navigatorKey,
       debugLogDiagnostics: true,
+      redirect: (context, state) {},
       routes: [
         GoRoute(
             path: RegisterView.routeName,
             name: RegisterView.routeName,
-            builder: (context, state) => const RegisterView()),
+            builder: (context, state) => RegisterView()),
+        GoRoute(
+            path: AddUsernameAndPhoneView.routeName,
+            name: AddUsernameAndPhoneView.routeName,
+            builder: (context, state) => const AddUsernameAndPhoneView()),
+        GoRoute(
+            path: PhoneCodeSentSentPage.routeName,
+            name: PhoneCodeSentSentPage.routeName,
+            builder: (context, state) => const PhoneCodeSentSentPage()),
         GoRoute(
             path: LoginView.routeName,
             name: LoginView.routeName,
@@ -98,6 +113,10 @@ final routerProvider = Provider<GoRouter>(
             path: ContactUsView.routeName,
             name: ContactUsView.routeName,
             builder: (context, state) => const ContactUsView()),
+        GoRoute(
+            path: ThemeSettingsView.routeName,
+            name: ThemeSettingsView.routeName,
+            builder: (context, state) => const ThemeSettingsView()),
       ],
     );
   },

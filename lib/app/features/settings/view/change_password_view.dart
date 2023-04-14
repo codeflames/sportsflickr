@@ -1,12 +1,17 @@
 import 'dart:developer';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:sportsflickr/app/core/firebase_error_helper/firebase_error_helper.dart';
 import 'package:sportsflickr/app/core/general_widgets/sportsflickr_appbar.dart';
 import 'package:sportsflickr/app/core/general_widgets/sportsflickr_form_fields.dart';
 import 'package:sportsflickr/app/core/general_widgets/sportsflickr_formatter.dart';
 import 'package:sportsflickr/app/core/theme/theme.dart';
+import 'package:sportsflickr/app/features/profile/providers/profile_providers.dart';
+import 'package:sportsflickr/app/features/profile/view/profile_view.dart';
 import 'package:sportsflickr/app/features/settings/view/settings_view.dart';
 
 final _codeSentProvider = StateProvider<bool>((ref) => false);
@@ -22,7 +27,8 @@ class ChangePasswordView extends ConsumerWidget {
   static final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  static final TextEditingController _codeController = TextEditingController();
+  static final TextEditingController _oldPasswordController =
+      TextEditingController();
   static final _formKey = GlobalKey<FormState>();
   static final _secondFormKey = GlobalKey<FormState>();
 
@@ -30,7 +36,7 @@ class ChangePasswordView extends ConsumerWidget {
     _emailController.clear();
     _passwordController.clear();
     _confirmPasswordController.clear();
-    _codeController.clear();
+    _oldPasswordController.clear();
   }
 
   @override
@@ -67,6 +73,20 @@ class ChangePasswordView extends ConsumerWidget {
                       SizedBox(height: 24.h),
                       SportsflickrEmailField(
                         controller: _emailController,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter an email address';
+                          } else if (!value.contains('@')) {
+                            return 'Please enter a valid email address';
+                          } else if (ref
+                                  .read(userChangesProvider)
+                                  .valueOrNull!
+                                  .email !=
+                              _emailController.text.trim()) {
+                            return 'Email does not match with your current email';
+                          }
+                          return null;
+                        },
                       ),
                       SizedBox(height: 48.h),
                       ElevatedButton(
@@ -90,12 +110,18 @@ class ChangePasswordView extends ConsumerWidget {
                     children: [
                       SizedBox(height: 24.h),
                       Text(
-                          'Enter the code sent to your email address and continue with your new password',
+                          'Enter the code sent to your old and  new password to change your password',
                           style: redHatDisplayRegular14),
                       SizedBox(height: 24.h),
-                      SportsflickrTextFormField(
-                        controller: _codeController,
-                        labelText: 'Code',
+                      SportsflickrPasswordField(
+                        controller: _oldPasswordController,
+                        labelText: 'Old password',
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Please enter your old password';
+                          }
+                          return null;
+                        },
                       ),
                       SizedBox(height: 24.h),
                       SportsflickrPasswordField(
@@ -119,7 +145,41 @@ class ChangePasswordView extends ConsumerWidget {
                       ElevatedButton(
                           style: primaryButtonStyle,
                           child: const Text('Change Password'),
-                          onPressed: () {
+                          onPressed: () async {
+                            // log all controllers
+                            log('email: ${_emailController.text}');
+                            log('old password: ${_oldPasswordController.text}');
+                            log('new password: ${_passwordController.text}');
+                            log('confirm password: ${_confirmPasswordController.text}');
+                            if (_secondFormKey.currentState!.validate()) {
+                              try {
+                                final credential = EmailAuthProvider.credential(
+                                    email: _emailController.text,
+                                    password: _passwordController.text);
+
+                                EasyLoading.show(status: 'Loading...');
+                                await FirebaseAuth.instance.currentUser!
+                                    .reauthenticateWithCredential(credential);
+                                await FirebaseAuth.instance.currentUser!
+                                    .updatePassword(
+                                        _confirmPasswordController.text.trim());
+                                EasyLoading.showSuccess('Password changed');
+
+                                if (context.mounted) {
+                                  context.goNamed(ProfileView.routeName);
+                                }
+                                clearAllControllers();
+                              } on FirebaseAuthException catch (e) {
+                                print(e);
+                                EasyLoading.showError(
+                                    FirebaseErrorHelper.getErrorMessage(e));
+                              } catch (e) {
+                                print(e);
+                                EasyLoading.showError('Something went wrong');
+                              } finally {
+                                EasyLoading.dismiss();
+                              }
+                            }
                             ref.read(_codeSentProvider.notifier).state = false;
                           })
                     ],

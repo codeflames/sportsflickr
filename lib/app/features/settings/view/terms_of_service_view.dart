@@ -19,10 +19,8 @@ class TermsOfServiceView extends ConsumerWidget {
         title: Text('Terms of Service', style: redHatDisplayBold14),
         onPressed: () {
           if (Navigator.canPop(context)) {
-            log('poping');
             context.pop();
           } else {
-            log('using goNamed');
             context.goNamed(SettingsView.routeName);
           }
         },

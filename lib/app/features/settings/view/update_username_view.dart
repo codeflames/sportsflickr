@@ -1,10 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sportsflickr/app/core/general_widgets/sportsflickr_appbar.dart';
 import 'package:sportsflickr/app/core/general_widgets/sportsflickr_form_fields.dart';
 import 'package:sportsflickr/app/core/general_widgets/sportsflickr_formatter.dart';
 import 'package:sportsflickr/app/core/theme/theme.dart';
+import 'package:sportsflickr/app/features/profile/view/profile_view.dart';
 import 'package:sportsflickr/app/features/settings/view/settings_view.dart';
 
 class UpdateUsernameView extends ConsumerWidget {
@@ -12,9 +16,10 @@ class UpdateUsernameView extends ConsumerWidget {
 
   static const routeName = '/settings/update-username';
 
-  final TextEditingController _currentUsernameController =
-      TextEditingController();
+  // final TextEditingController _currentUsernameController =
+  //     TextEditingController();
   final TextEditingController _newUsernameController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -32,7 +37,7 @@ class UpdateUsernameView extends ConsumerWidget {
             children: [
               SizedBox(height: 24.h),
               Text(
-                  'Warning:\nThis action cannot be undone.\nYour buddies might be confused if you change your username.\nAnother person can claim the username after 30 days\nYou will be logged out after updating your email address.',
+                  'Warning:\nYour buddies might be confused if you change your username.\nAnother person can claim the username after you change it',
                   style: redHatDisplayBold14.copyWith(color: fF0000)),
               SizedBox(height: 24.h),
               Text(
@@ -40,19 +45,37 @@ class UpdateUsernameView extends ConsumerWidget {
                 style: redHatDisplayBold14,
               ),
               SizedBox(height: 24.h),
-              SportsflickrTextFormField(
-                labelText: 'Your current username',
-                controller: _currentUsernameController,
-              ),
+              // SportsflickrTextFormField(
+              //   labelText: 'Your current username',
+              //   controller: _currentUsernameController,
+              // ),
               SizedBox(height: 24.h),
-              SportsflickrTextFormField(
-                labelText: 'Your new username',
-                controller: _newUsernameController,
+              Form(
+                key: _formKey,
+                child: SportsflickrTextFormField(
+                  labelText: 'Your new username',
+                  controller: _newUsernameController,
+                ),
               ),
               SizedBox(height: 48.h),
               ElevatedButton(
                 style: primaryButtonStyle,
-                onPressed: () {},
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    EasyLoading.show(status: 'Updating username...');
+                    try {
+                      await FirebaseAuth.instance.currentUser!
+                          .updateDisplayName(
+                              _newUsernameController.text.trim());
+                      EasyLoading.showSuccess('Username updated');
+                      if (context.mounted) {
+                        context.goNamed(ProfileView.routeName);
+                      }
+                    } catch (e) {
+                      EasyLoading.showError('Error updating username');
+                    }
+                  }
+                },
                 child: Text('Update Username', style: redHatDisplayBold14),
               ),
             ],

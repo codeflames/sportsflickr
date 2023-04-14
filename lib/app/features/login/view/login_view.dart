@@ -4,11 +4,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sportsflickr/app/core/general_widgets/sportsflickr_form_fields.dart';
 import 'package:sportsflickr/app/core/general_widgets/sportsflickr_formatter.dart';
 import 'package:sportsflickr/app/core/theme/theme.dart';
+import 'package:sportsflickr/app/features/login/model/login_model.dart';
+import 'package:sportsflickr/app/features/login/model/login_request/login_request.dart';
+import 'package:sportsflickr/app/features/login/providers/login_providers.dart';
 import 'package:sportsflickr/app/features/profile/view/profile_view.dart';
 import 'package:sportsflickr/app/features/register/view/register_view.dart';
 import 'package:sportsflickr/gen/assets.gen.dart';
-
-final showEmailFieldProvider = StateProvider<bool>((ref) => true);
 
 class LoginView extends ConsumerWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -16,12 +17,66 @@ class LoginView extends ConsumerWidget {
   static const routeName = '/login';
 
   static final TextEditingController _emailController = TextEditingController();
+  static final TextEditingController _phoneController = TextEditingController();
   static final TextEditingController _passwordController =
       TextEditingController();
+  static final TextEditingController codeController = TextEditingController();
+
+  void clearControllers() {
+    _emailController.clear();
+    _phoneController.clear();
+    _passwordController.clear();
+    codeController.clear();
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final showEmailField = ref.watch(showEmailFieldProvider);
+
+    ref.listen<LoginState>(loginControllerProvider, (prev, next) {
+      if (prev != next && next.isCodeSent == true) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => AlertDialog(
+            title: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text("Enter OTP"),
+                const SizedBox(width: 8),
+                //cancel
+                TextButton(
+                    onPressed: () {
+                      clearControllers();
+                      context.pop();
+                    },
+                    child: const Icon(Icons.close)),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                TextField(
+                  controller: codeController,
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              TextButton(onPressed: () {}, child: Text("Resend")),
+              TextButton(
+                child: const Text("Done"),
+                onPressed: () => ref
+                    .read(loginControllerProvider.notifier)
+                    .loginWithOtpForCredential(
+                        codeController.text, next.verificationId ?? ''),
+              ),
+            ],
+          ),
+        );
+      } else if (next.isLoggedIn == true) {
+        context.goNamed(ProfileView.routeName);
+      }
+    });
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
@@ -48,7 +103,7 @@ class LoginView extends ConsumerWidget {
                           )
                         : SportsflickrTextFormField(
                             labelText: 'Phone Number',
-                            controller: _emailController,
+                            controller: _phoneController,
                             keyboardType: TextInputType.phone,
                           ),
                   ),
@@ -56,8 +111,14 @@ class LoginView extends ConsumerWidget {
                   GestureDetector(
                     onTap: () {
                       _emailController.clear();
+                      _phoneController.clear();
                       ref.read(showEmailFieldProvider.notifier).state =
                           !showEmailField;
+
+                      ref
+                          .read(loginControllerProvider.notifier)
+                          .switchEmailOrPhoneLogin(
+                              ref.read(showEmailFieldProvider));
                     },
                     child: Icon(
                         showEmailField == true
@@ -87,7 +148,13 @@ class LoginView extends ConsumerWidget {
               ElevatedButton(
                 style: primaryButtonStyle,
                 onPressed: () {
-                  context.goNamed(ProfileView.routeName);
+                  ref.read(loginControllerProvider.notifier).login(
+                        LoginRequest(
+                          email: _emailController.text,
+                          phoneNumber: _phoneController.text,
+                          password: _passwordController.text,
+                        ),
+                      );
                 },
                 child: const Text('Login'),
               ),
@@ -116,95 +183,3 @@ class LoginView extends ConsumerWidget {
     );
   }
 }
-
-// class LoginPage extends StatefulWidget {
-//   @override
-//   _LoginPageState createState() => _LoginPageState();
-// }
-
-// class _LoginPageState extends State<LoginPage> {
-//   bool _showEmailField = true;
-//   TextEditingController _emailController = TextEditingController();
-//   TextEditingController _phoneController = TextEditingController();
-//   TextEditingController _passwordController = TextEditingController();
-
-//   void _toggleField() {
-//     setState(() {
-//       _showEmailField = !_showEmailField;
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: SingleChildScrollView(
-//         child: Container(
-//           padding: EdgeInsets.all(32.0),
-//           child: Column(
-//             mainAxisAlignment: MainAxisAlignment.center,
-//             children: <Widget>[
-//               SizedBox(height: 50.0),
-//               Text(
-//                 'Login',
-//                 style: TextStyle(
-//                   fontSize: 32.0,
-//                   fontWeight: FontWeight.bold,
-//                 ),
-//               ),
-//               SizedBox(height: 50.0),
-//               _showEmailField
-//                   ? TextFormField(
-//                       controller: _emailController,
-//                       keyboardType: TextInputType.emailAddress,
-//                       decoration: InputDecoration(
-//                         hintText: 'Email',
-//                         border: OutlineInputBorder(),
-//                       ),
-//                     )
-//                   : TextFormField(
-//                       controller: _phoneController,
-//                       keyboardType: TextInputType.phone,
-//                       decoration: InputDecoration(
-//                         hintText: 'Phone',
-//                         border: OutlineInputBorder(),
-//                       ),
-//                     ),
-//               SizedBox(height: 20.0),
-//               TextFormField(
-//                 controller: _passwordController,
-//                 obscureText: true,
-//                 decoration: InputDecoration(
-//                   hintText: 'Password',
-//                   border: OutlineInputBorder(),
-//                 ),
-//               ),
-//               SizedBox(height: 20.0),
-//               Row(
-//                 mainAxisAlignment: MainAxisAlignment.end,
-//                 children: <Widget>[
-//                   GestureDetector(
-//                     onTap: _toggleField,
-//                     child: Text(
-//                       _showEmailField ? 'Use Phone' : 'Use Email',
-//                       style: TextStyle(
-//                         color: Colors.blue,
-//                         fontWeight: FontWeight.bold,
-//                       ),
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//               SizedBox(height: 20.0),
-//               ElevatedButton(
-//                 onPressed: () {
-//                   // Handle login button press here
-//                 },
-//                 child: Text('Login'),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }

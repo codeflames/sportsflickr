@@ -5,6 +5,7 @@ class ForgotPasswordRepositoryImpl extends ForgotPasswordRepository {
   // TODO add your methods here
 }
 
-final forgotPasswordRepositoryProvider = Provider<ForgotPasswordRepository>((ref) {
+final forgotPasswordRepositoryProvider =
+    Provider<ForgotPasswordRepository>((ref) {
   return ForgotPasswordRepositoryImpl();
 });

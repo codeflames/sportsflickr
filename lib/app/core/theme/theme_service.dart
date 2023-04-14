@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:sportsflickr/app/core/local_storage/app_storage.dart';
 import 'package:sportsflickr/app/core/theme/theme.dart';
 
 class ThemeService {
@@ -34,31 +35,19 @@ class ThemeService {
     }
   }
 
-  //Toggle theme mode
-  // void toggleTheme() {
-  //   final themeMode = _ref.read(themeModeProvider);
-
-  //   switch (themeMode) {
-  //     case ThemeMode.light:
-  //       _ref.read(themeModeProvider.notifier).update((state) => ThemeMode.dark);
-  //       break;
-  //     default:
-  //       _ref
-  //           .read(themeModeProvider.notifier)
-  //           .update((state) => ThemeMode.light);
-  //   }
-  // }
-
   setLightTheme() {
     _ref.read(themeModeProvider.notifier).update((state) => ThemeMode.light);
+    _ref.read(hiveStorageProvider).put<String?>('themeMode', 'light');
   }
 
   setDarkTheme() {
     _ref.read(themeModeProvider.notifier).update((state) => ThemeMode.dark);
+    _ref.read(hiveStorageProvider).put<String?>('themeMode', 'dark');
   }
 
   // Set theme mode to system
   void setSystemTheme() {
     _ref.read(themeModeProvider.notifier).update((state) => ThemeMode.system);
+    _ref.read(hiveStorageProvider).put<String?>('themeMode', 'system');
   }
 }

@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1052865928100",
+    "project_id": "sportsflickr",
+    "storage_bucket": "sportsflickr.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1052865928100:android:b5a015b460b03422ff3f31",
+        "android_client_info": {
+          "package_name": "com.sportsflickr.sportsflickr"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1052865928100-ct4lh0fbmthn8dk85t34hpsp942rg9bm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6N2yCZtEIyhU2yrTJ1BsG3JCjzQPp40A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1052865928100-ct4lh0fbmthn8dk85t34hpsp942rg9bm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1052865928100-8o3arut824nko092v3j5a3v8kjrvap82.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.sportsflickr.sportsflickr"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

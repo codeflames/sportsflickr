@@ -1,7 +1,12 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sportsflickr/app/core/general_widgets/sportsflickr_formatter.dart';
 import 'package:sportsflickr/app/core/theme/theme.dart';
+import 'package:sportsflickr/app/features/profile/providers/profile_providers.dart';
+import 'package:sportsflickr/gen/assets.gen.dart';
 
 final sportsListProvider = Provider((ref) => [
       "Football",
@@ -23,13 +28,17 @@ class ProfileView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // final userProfile = ref.watch(authProvider).valueOrNull;
     final sportsList = ref.watch(sportsListProvider);
+    final userChanges =
+        ref.watch(userChangesProvider.select((value) => value.valueOrNull));
+
     return SafeArea(
       child: Scaffold(
         body: SingleChildScrollView(
           child: Container(
             padding: paddingH24,
-            height: sportsflickrScreenHeight(context),
+            height: sportsflickrScreenHeight(context) - 54.h,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
@@ -37,33 +46,98 @@ class ProfileView extends ConsumerWidget {
                 Center(
                   child: Container(
                       height: 150.h,
-                      width: 180.w,
+                      width: 150.w,
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
                         // color: zero0000,
                       ),
-                      // color: Colors.red,
                       child: Stack(children: [
                         const Center(child: TripleRingWidget()),
                         Align(
                           alignment: Alignment.centerRight,
                           child: Container(
                             margin: const EdgeInsets.only(left: 50),
-                            child: Icon(Icons.camera_alt,
-                                size: 24.h, color: five36BE5.withOpacity(.8)),
+                            child: IconButton(
+                              onPressed: () async {
+                                try {
+                                  // EasyLoading.show(status: 'Uploading...');
+                                  await ref
+                                      .read(profileControllerProvider)
+                                      .uploadImageToFirebase();
+                                  // EasyLoading.showSuccess('Image uploaded');
+                                } catch (e) {
+                                  log(e.toString());
+                                  EasyLoading.showError('An error occured');
+                                }
+                              },
+                              icon: Icon(Icons.camera_alt,
+                                  size: 24.h, color: five36BE5.withOpacity(.8)),
+                            ),
                           ),
                         ),
                       ])),
                 ),
                 SizedBox(height: 16.h),
-                Text('Yereka',
-                    style: redHatDisplayBold16, textAlign: TextAlign.center),
+                Text(
+                    // userProfile?.displayName ??
+                    userChanges?.displayName ??
+                        'User ${userChanges?.uid.substring(0, 10)}',
+                    style: redHatDisplayBold16,
+                    textAlign: TextAlign.center),
                 SizedBox(height: 8.h),
                 //email
-                Text('yerekadonald@gmail.com',
-                    style: redHatDisplayMedium12, textAlign: TextAlign.center),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(userChanges?.email ?? '',
+                        style: redHatDisplayMedium12,
+                        textAlign: TextAlign.center),
+                    SizedBox(width: 8.w),
+                    userChanges?.emailVerified == true
+                        ? Icon(
+                            Icons.verified,
+                            size: 16.h,
+                          )
+                        : const SizedBox(),
+                  ],
+                ),
+                // SizedBox(height: 8.h),
+                userChanges?.emailVerified == true
+                    ? const SizedBox()
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Click to verify >>',
+                            style: redHatDisplayMedium12,
+                          ),
+                          Transform.scale(
+                              scale: .7,
+                              child: OutlinedButton(
+                                  style: outlineButtonStyle.copyWith(
+                                      padding:
+                                          MaterialStateProperty.all<EdgeInsets>(
+                                              EdgeInsets.symmetric(
+                                                  horizontal: 8.w))),
+                                  onPressed: () async {
+                                    EasyLoading.show(status: 'Sending...');
+                                    try {
+                                      await userChanges
+                                          ?.sendEmailVerification();
+                                      EasyLoading.showSuccess('Sent!');
+                                      ref
+                                          .read(profileControllerProvider)
+                                          .reloadUserAfterSomeSeconds();
+                                    } catch (e) {
+                                      log(e.toString());
+                                      EasyLoading.showError('An error occured');
+                                    }
+                                  },
+                                  child: const Text('Verify'))),
+                        ],
+                      ),
                 // Interests
-                SizedBox(height: 32.h),
+                // SizedBox(height: 16.h),
                 Text(
                   'Interests',
                   style: redHatDisplayBold16,
@@ -98,25 +172,25 @@ class ProfileView extends ConsumerWidget {
                       )
                     : Container(),
                 SizedBox(height: 24.h),
-                Text(
-                  'Messages',
-                  style: redHatDisplayBold16,
-                ),
-                SizedBox(height: 16.h),
-                Row(
-                  children: [
-                    Icon(Icons.email, color: five36BE5.withOpacity(.8)),
-                    SizedBox(width: 8.w),
-                    Text(
-                      'You have 3 unread messages',
-                      style: redHatDisplayMedium14,
-                    ),
-                    const Spacer(),
-                    Icon(Icons.arrow_forward_ios,
-                        size: 16.h, color: five36BE5.withOpacity(.8)),
-                  ],
-                ),
-                SizedBox(height: 24.h),
+                // Text(
+                //   'Messages',
+                //   style: redHatDisplayBold16,
+                // ),
+                // SizedBox(height: 16.h),
+                // Row(
+                //   children: [
+                //     Icon(Icons.email, color: five36BE5.withOpacity(.8)),
+                //     SizedBox(width: 8.w),
+                //     Text(
+                //       'You have 3 unread messages',
+                //       style: redHatDisplayMedium14,
+                //     ),
+                //     const Spacer(),
+                //     Icon(Icons.arrow_forward_ios,
+                //         size: 16.h, color: five36BE5.withOpacity(.8)),
+                //   ],
+                // ),
+                // SizedBox(height: 24.h),
                 Text(
                   'Favorite Teams',
                   style: redHatDisplayBold16,
@@ -164,7 +238,7 @@ class ProfileView extends ConsumerWidget {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
-                                    'Team Name and team name',
+                                    'Team Name',
                                     style: redHatDisplayRegular14,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -204,11 +278,14 @@ class ProfileView extends ConsumerWidget {
   }
 }
 
-class TripleRingWidget extends StatelessWidget {
+class TripleRingWidget extends ConsumerWidget {
   const TripleRingWidget({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // final userProfile = ref.watch(authProvider);
+    final userChanges =
+        ref.watch(userChangesProvider.select((value) => value.valueOrNull));
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -264,7 +341,18 @@ class TripleRingWidget extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: zero0000,
               ),
-              child: Center(child: FlutterLogo(size: 50.h))),
+              child: Center(
+                  child: userChanges?.photoURL != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          child: Image.network(
+                            userChanges?.photoURL as String,
+                            fit: BoxFit.cover,
+                            width: 50.h,
+                            height: 50.h,
+                          ))
+                      : SvgPicture.asset(Assets.images.logoSportsflickrSvg,
+                          height: 50.h, width: 50.w))),
         ),
       ),
     );
@@ -285,12 +373,28 @@ class InterestWidget extends StatelessWidget {
       ),
       child: Row(
         children: [
+          // Container(
+          //   height: 20.h,
+          //   width: 20.h,
+          //   decoration: const BoxDecoration(
+          //     shape: BoxShape.circle,
+          //     color: five36BE5,
+          //   ),
+
+          // ),
           Container(
-            height: 20.h,
-            width: 20.h,
-            decoration: const BoxDecoration(
+            height: 30.h,
+            width: 30.h,
+            decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: five36BE5,
+              color: five36BE5.withOpacity(.1),
+            ),
+            child: const Center(
+              child: Icon(
+                Icons.sports_baseball,
+                color: five36BE5,
+                size: 18,
+              ),
             ),
           ),
           SizedBox(width: 8.w),

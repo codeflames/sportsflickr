@@ -15,7 +15,13 @@ class PrivacyPolicyView extends ConsumerWidget {
     return Scaffold(
       appBar: SportsflickrAppBar(
         title: Text('Privacy Policy', style: redHatDisplayBold14),
-        onPressed: () => context.goNamed(SettingsView.routeName),
+        onPressed: () {
+          if (Navigator.canPop(context)) {
+            context.pop();
+          } else {
+            context.goNamed(SettingsView.routeName);
+          }
+        },
       ),
       body: SafeArea(
         child: SingleChildScrollView(
