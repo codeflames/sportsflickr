@@ -44,12 +44,12 @@ final inputDecoration = InputDecoration(
   border: OutlineInputBorder(
     borderRadius: BorderRadius.circular(6),
   ),
-  focusedBorder: const OutlineInputBorder(
-    borderSide: BorderSide(
-      color: five36BE5,
-      // color: e7e8ea,
-    ),
-  ),
+  // focusedBorder: const OutlineInputBorder(
+  //   borderSide: BorderSide(
+  //     color: five36BE5,
+  //     // color: e7e8ea,
+  //   ),
+  // ),
   errorBorder: const OutlineInputBorder(
     borderSide: BorderSide(
       color: fF0000,
@@ -61,11 +61,11 @@ final inputDecoration = InputDecoration(
       ),
       borderRadius: BorderRadius.all(Radius.circular(6))),
   contentPadding: const EdgeInsets.fromLTRB(14, 15, 12, 14),
-  enabledBorder: const OutlineInputBorder(
-    borderSide: BorderSide(
-      color: e7e8ea,
-    ),
-  ),
+  // enabledBorder: const OutlineInputBorder(
+  //   borderSide: BorderSide(
+  //     color: e7e8ea,
+  //   ),
+  // ),
 );
 
 final primaryButtonStyle = ElevatedButton.styleFrom(

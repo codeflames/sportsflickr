@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -10,7 +8,7 @@ import 'package:sportsflickr/app/core/theme/theme.dart';
 import 'package:sportsflickr/app/features/login/view/login_view.dart';
 import 'package:sportsflickr/app/features/register/model/register_model.dart';
 import 'package:sportsflickr/app/features/register/providers/register_providers.dart';
-import 'package:sportsflickr/app/features/register/view/add_username_and%20phone_view.dart';
+import 'package:sportsflickr/app/features/register/view/select_sport_interests.dart';
 import 'package:sportsflickr/gen/assets.gen.dart';
 
 class RegisterView extends ConsumerWidget {
@@ -23,6 +21,8 @@ class RegisterView extends ConsumerWidget {
       TextEditingController();
   static final TextEditingController _confirmPasswordController =
       TextEditingController();
+  static final TextEditingController _usernameController =
+      TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -30,7 +30,7 @@ class RegisterView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen<RegisterState>(registerControllerProvider, (prev, next) {
       if (prev != next && next.isRegistered == true) {
-        context.goNamed(AddUsernameAndPhoneView.routeName);
+        context.goNamed(SelectSportsInterestPage.routeName);
       }
     });
     return Scaffold(
@@ -58,6 +58,12 @@ class RegisterView extends ConsumerWidget {
                   ),
 
                   SizedBox(height: 16.h),
+                  SportsflickrTextFormField(
+                    labelText: 'Username',
+                    controller: _usernameController,
+                    validatorMessage: 'Please enter a username',
+                  ),
+                  SizedBox(height: 16.h),
                   SportsflickrPasswordField(
                     controller: _passwordController,
                   ),
@@ -82,12 +88,14 @@ class RegisterView extends ConsumerWidget {
                   ElevatedButton(
                     style: primaryButtonStyle,
                     onPressed: () {
-                      if (_formKey.currentState!.validate()) {
+                      if (_formKey.currentState!.validate() &&
+                          _usernameController.text.length >= 3) {
                         ref
                             .read(registerControllerProvider.notifier)
                             .registerUser(
                                 email: _emailController.text,
-                                password: _passwordController.text);
+                                password: _passwordController.text,
+                                username: _usernameController.text);
                       }
                     },
                     child: const Text('Register'),

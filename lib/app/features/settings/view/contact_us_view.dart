@@ -53,7 +53,10 @@ class ContactUsView extends ConsumerWidget {
     return Scaffold(
       appBar: SportsflickrAppBar(
         title: Text('Contact Us', style: redHatDisplayBold14),
-        onPressed: () => context.goNamed(SettingsView.routeName),
+        onPressed: () {
+          ref.read(selectedSubjectProvider.notifier).state = [];
+          context.goNamed(SettingsView.routeName);
+        },
       ),
       body: SafeArea(
         child: Container(

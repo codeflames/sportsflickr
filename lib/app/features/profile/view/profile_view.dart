@@ -1,25 +1,17 @@
 import 'dart:developer';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sportsflickr/app/core/general_widgets/sportsflickr_formatter.dart';
 import 'package:sportsflickr/app/core/theme/theme.dart';
 import 'package:sportsflickr/app/features/profile/providers/profile_providers.dart';
+import 'package:sportsflickr/app/features/register/model/sports_interest_state.dart';
 import 'package:sportsflickr/gen/assets.gen.dart';
 
-final sportsListProvider = Provider((ref) => [
-      "Football",
-      "Basketball",
-      "Baseball",
-      "Hockey",
-      "Soccer",
-      "Tennis",
-      "Golf",
-      "Boxing",
-      "MMA",
-      "Auto Racing"
-    ]);
+final sportsListProvider = Provider(
+    (ref) => ref.read(sportsInterestControllerProvider).selectedInterests);
 
 class ProfileView extends ConsumerWidget {
   const ProfileView({Key? key}) : super(key: key);
@@ -136,8 +128,7 @@ class ProfileView extends ConsumerWidget {
                                   child: const Text('Verify'))),
                         ],
                       ),
-                // Interests
-                // SizedBox(height: 16.h),
+
                 Text(
                   'Interests',
                   style: redHatDisplayBold16,
@@ -145,7 +136,9 @@ class ProfileView extends ConsumerWidget {
                 SizedBox(height: 16.h),
 
                 GridView.builder(
-                  itemCount: sportsList.sublist(0, 6).length,
+                  itemCount: sportsList.length >= 6
+                      ? sportsList.sublist(0, 6).length
+                      : sportsList.length,
                   physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       childAspectRatio: 1.5,
@@ -154,7 +147,7 @@ class ProfileView extends ConsumerWidget {
                       crossAxisCount: 3),
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
-                    return InterestWidget(sport: sportsList[index]);
+                    return InterestWidget(sport: sportsList[index]['name']);
                   },
                 ),
                 sportsList.length > 6
@@ -204,7 +197,7 @@ class ProfileView extends ConsumerWidget {
                     itemBuilder: (context, index) {
                       return Container(
                         // height: 10.h,
-                        width: 150.w,
+                        width: 160.w,
 
                         margin: const EdgeInsets.only(right: 8),
                         padding: const EdgeInsets.all(8),
@@ -232,34 +225,40 @@ class ProfileView extends ConsumerWidget {
                               ),
                             ),
                             SizedBox(width: 8.w),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    'Team Name',
-                                    style: redHatDisplayRegular14,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  Text(
-                                    'Sport Name',
-                                    style: redHatDisplayRegular10,
-                                  ),
-                                  SizedBox(height: 4.h),
-                                  index == 1
-                                      ? Column(
-                                          children: [
-                                            Text(
-                                              'Playing Now',
-                                              style: redHatDisplayRegular10,
-                                            ),
-                                          ],
-                                        )
-                                      : Text('Next Game: 12/12/2023',
-                                          style: redHatDisplayRegular10),
-                                ],
-                              ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Team Name',
+                                  style: redHatDisplayRegular14,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Text(
+                                  'Sport Name',
+                                  style: redHatDisplayRegular10,
+                                ),
+                                SizedBox(height: 4.h),
+                                index == 1
+                                    ? Text(
+                                        'Playing Now',
+                                        style: redHatDisplayRegular10,
+                                      )
+                                    : Text('Next Game:\n12/12/2023',
+                                        style: redHatDisplayRegular10),
+                                // red container
+                                SizedBox(height: 4.h),
+                                index == 1
+                                    ? Container(
+                                        height: 4.h,
+                                        width: 4.h,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Colors.green.withOpacity(.5),
+                                        ),
+                                      )
+                                    : const SizedBox.shrink()
+                              ],
                             ),
                           ],
                         ),
@@ -268,7 +267,10 @@ class ProfileView extends ConsumerWidget {
                   ),
                 ),
                 // SizedBox(height: 16.h),
-                const Spacer(),
+                // const Spacer(),
+                SizedBox(
+                  height: 40.h,
+                ),
               ],
             ),
           ),
@@ -335,24 +337,31 @@ class TripleRingWidget extends ConsumerWidget {
             ],
           ),
           child: Container(
-              height: 100.h,
-              width: 100.h,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: zero0000,
+            height: 100.h,
+            width: 100.h,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: zero0000,
+            ),
+            child: Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child: CachedNetworkImage(
+                    height: 50.h,
+                    width: 50.h,
+                    fit: BoxFit.cover,
+                    imageUrl: userChanges?.photoURL ?? '',
+                    placeholder: (context, url) => SvgPicture.asset(
+                        Assets.images.logoSportsflickrSvg,
+                        height: 50.h,
+                        width: 50.w),
+                    errorWidget: (context, url, error) => SvgPicture.asset(
+                        Assets.images.logoSportsflickrSvg,
+                        height: 50.h,
+                        width: 50.w)),
               ),
-              child: Center(
-                  child: userChanges?.photoURL != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(50),
-                          child: Image.network(
-                            userChanges?.photoURL as String,
-                            fit: BoxFit.cover,
-                            width: 50.h,
-                            height: 50.h,
-                          ))
-                      : SvgPicture.asset(Assets.images.logoSportsflickrSvg,
-                          height: 50.h, width: 50.w))),
+            ),
+          ),
         ),
       ),
     );

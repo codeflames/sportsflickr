@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:sportsflickr/app/core/firebase_error_helper/firebase_error_helper.dart';
 import 'package:sportsflickr/app/core/general_widgets/sportsflickr_appbar.dart';
 import 'package:sportsflickr/app/core/general_widgets/sportsflickr_form_fields.dart';
 import 'package:sportsflickr/app/core/general_widgets/sportsflickr_formatter.dart';
@@ -80,18 +81,22 @@ class UpdateEmailView extends ConsumerWidget {
                   style: primaryButtonStyle,
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      EasyLoading.show(status: 'Updating email...');
-                      FirebaseAuth.instance.currentUser
-                          ?.updateEmail(_newEmailController.text)
-                          .then((value) {
-                        EasyLoading.dismiss();
-                        context.goNamed(ProfileView.routeName);
-                      }).catchError((error) {
+                      try {
+                        EasyLoading.show(status: 'Updating email...');
+                        FirebaseAuth.instance.currentUser
+                            ?.updateEmail(_newEmailController.text)
+                            .then((value) {
+                          EasyLoading.dismiss();
+                          context.goNamed(ProfileView.routeName);
+                        });
+                      } on FirebaseAuthException catch (e) {
+                        EasyLoading.showError(
+                            FirebaseErrorHelper.getErrorMessage(e));
+                      } catch (error) {
                         print(error.toString());
                         EasyLoading.dismiss();
-                        EasyLoading.showError(error.toString(),
-                            duration: const Duration(seconds: 5));
-                      });
+                        EasyLoading.showError('Something went wrong');
+                      }
                     }
 
                     // FirebaseAuth.instance.currentUser

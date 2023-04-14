@@ -9,7 +9,7 @@ import 'package:sportsflickr/app/features/forgot_password/view/forgot_password_v
 import 'package:sportsflickr/app/features/login/view/login_view.dart';
 import 'package:sportsflickr/app/features/profile/view/profile_view.dart';
 import 'package:sportsflickr/app/features/register/providers/register_providers.dart';
-import 'package:sportsflickr/app/features/register/view/add_username_and%20phone_view.dart';
+import 'package:sportsflickr/app/features/register/view/select_sport_interests.dart';
 import 'package:sportsflickr/app/features/register/view/phone_code_sent.dart';
 import 'package:sportsflickr/app/features/register/view/register_view.dart';
 import 'package:sportsflickr/app/features/settings/view/about_view.dart';
@@ -43,17 +43,17 @@ final routerProvider = Provider<GoRouter>(
             name: RegisterView.routeName,
             builder: (context, state) => RegisterView()),
         GoRoute(
-            path: AddUsernameAndPhoneView.routeName,
-            name: AddUsernameAndPhoneView.routeName,
-            builder: (context, state) => const AddUsernameAndPhoneView()),
+            path: SelectSportsInterestPage.routeName,
+            name: SelectSportsInterestPage.routeName,
+            builder: (context, state) => SelectSportsInterestPage()),
         GoRoute(
             path: PhoneCodeSentSentPage.routeName,
             name: PhoneCodeSentSentPage.routeName,
-            builder: (context, state) => const PhoneCodeSentSentPage()),
+            builder: (context, state) => PhoneCodeSentSentPage()),
         GoRoute(
             path: LoginView.routeName,
             name: LoginView.routeName,
-            builder: (context, state) => const LoginView()),
+            builder: (context, state) => LoginView()),
         GoRoute(
             path: ForgotPasswordView.routeName,
             name: ForgotPasswordView.routeName,

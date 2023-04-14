@@ -23,16 +23,20 @@ class RegisterController extends StateNotifier<RegisterState> {
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   Future<void> registerUser(
-      {required String email, required String password}) async {
+      {required String email,
+      required String password,
+      required username}) async {
     try {
       state = state.copyWith(
         email: email,
         password: password,
+        username: username,
       );
       EasyLoading.show(status: 'Registering...');
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
           email: email, password: password);
       if (userCredential.user != null) {
+        await userCredential.user!.updateDisplayName(username);
         await userCredential.user!.sendEmailVerification();
         EasyLoading.showSuccess('Verification Email Sent');
 
@@ -72,5 +76,10 @@ class RegisterController extends StateNotifier<RegisterState> {
         'error': e.toString(),
       });
     }
+  }
+
+  //clean register state
+  void cleanRegisterState() {
+    state = RegisterState.initial();
   }
 }

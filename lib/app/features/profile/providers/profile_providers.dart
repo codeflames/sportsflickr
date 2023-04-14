@@ -24,6 +24,7 @@ class ProfileController extends StateNotifier {
     for (var i = 0; i < 9; i++) {
       await Future.delayed(const Duration(seconds: 10));
       final user = FirebaseAuth.instance.userChanges();
+      await FirebaseAuth.instance.currentUser!.reload();
       log('reloaded user ${i + 1} times');
       log(user.toString());
     }

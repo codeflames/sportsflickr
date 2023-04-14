@@ -1,102 +1,213 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:sportsflickr/app/core/firebase_error_helper/firebase_error_helper.dart';
 import 'package:sportsflickr/app/core/general_widgets/sportsflickr_appbar.dart';
+import 'package:sportsflickr/app/core/general_widgets/sportsflickr_form_fields.dart';
 import 'package:sportsflickr/app/core/theme/theme.dart';
+import 'package:sportsflickr/app/features/login/providers/login_providers.dart';
+import 'package:sportsflickr/app/features/login/view/login_view.dart';
 import 'package:sportsflickr/app/features/profile/view/profile_view.dart';
 import 'package:sportsflickr/app/features/register/providers/register_providers.dart';
-import 'package:sportsflickr/app/features/register/view/add_username_and%20phone_view.dart';
+import 'package:sportsflickr/app/features/register/view/select_sport_interests.dart';
+import 'package:sportsflickr/gen/assets.gen.dart';
 
 class PhoneCodeSentSentPage extends ConsumerWidget {
-  const PhoneCodeSentSentPage({super.key});
+  PhoneCodeSentSentPage({super.key});
 
   static const routeName = '/register/phone-code-sent';
 
-  static final TextEditingController _controller = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController verificationCodeController =
+      TextEditingController();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // ref.listen(accountSetupControllerProvider, (previousState, nextState) {
-    //   if (previousState != nextState && nextState.isVerified == true) {
-    //     context
-    //         .push('${AccountSetupView.routeName}/${AccountTypeView.routeName}');
-    //   }
-    // });
-    final registerController = ref.watch(registerControllerProvider);
+    final phoneAuth = ref.watch(phoneAuthProvider);
+    final verificationCode = ref.watch(verificationCodeProvider);
+    final showPhoneField = ref.watch(showPhoneFieldProvider);
+
+    PhoneNumber number = PhoneNumber(isoCode: 'NG');
 
     return Scaffold(
       appBar: SportsflickrAppBar(
         title: Text(
-          'Verify phone number',
+          'Add phone number',
           style: redHatDisplayBold16,
         ),
-        onPressed: () => context.go(AddUsernameAndPhoneView.routeName),
+        onPressed: () => context.go(SelectSportsInterestPage.routeName),
       ),
       body: Padding(
         padding: paddingH24,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(
-              height: 24.h,
-            ),
-            Text(
-              'Phone verification sent',
-              textAlign: TextAlign.center,
-              style: redHatDisplayBold18.copyWith(
-                color: zero80B17,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(height: 32.h),
+              SvgPicture.asset(Assets.images.logoSportsflickrSvg,
+                  width: 100.h, height: 100.h),
+              Text(
+                'SportsFlickr Phone Login',
+                style: redHatDisplayBold20,
+                textAlign: TextAlign.center,
               ),
-            ),
-            const SizedBox(
-              height: 6,
-            ),
-            Text(
-              'A verification SMS has been sent to ${registerController.phoneNumber}. Please enter the code below to continue.',
-              textAlign: TextAlign.center,
-              style: redHatDisplayRegular14.copyWith(color: zero80B17),
-            ),
-            SizedBox(
-              height: 24.h,
-            ),
-            TextFormField(
-              controller: _controller,
-              decoration: inputDecoration.copyWith(labelText: 'Enter code'),
-            ),
-            SizedBox(
-              height: 24.h,
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                context.goNamed(ProfileView.routeName);
-                // await ref
-                // .read(accountSetupControllerProvider.notifier)
-                // .verifyAccount(email, _controller.text);
-                // if (context.mounted) {
-                //   context.pop();
-                //   context.push(
-                //       '${AccountSetupView.routeName}/${AccountTypeView.routeName}');
-                // }
-              },
-              style: primaryButtonStyle,
-              child: const Text(
-                'Continue',
+              const Text('Adding your phone number will help you login faster'),
+              SizedBox(height: 32.h),
+              Visibility(
+                visible: showPhoneField,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    InternationalPhoneNumberInput(
+                      onInputChanged: (PhoneNumber number) {
+                        print(number.phoneNumber);
+                        phoneController.text = number.phoneNumber!;
+                      },
+                      initialValue: number,
+                      onInputValidated: (bool value) {
+                        print(value);
+                      },
+                      selectorConfig: const SelectorConfig(
+                        selectorType: PhoneInputSelectorType.DIALOG,
+                        setSelectorButtonAsPrefixIcon: true,
+                        leadingPadding: 20,
+                      ),
+
+                      ignoreBlank: false,
+                      autoValidateMode: AutovalidateMode.disabled,
+
+                      // initialValue: number,
+                      // textFieldController: phoneController,
+                      formatInput: true,
+                      keyboardType: const TextInputType.numberWithOptions(
+                          signed: true, decimal: true),
+                      inputDecoration: inputDecoration,
+                      onSaved: (PhoneNumber number) {
+                        print('On Saved: $number');
+                      },
+                    ),
+                    SizedBox(height: 24.h),
+                    ElevatedButton(
+                      style: primaryButtonStyle,
+                      onPressed: () async {
+                        try {
+                          EasyLoading.show(
+                              status: 'Sending verification code...');
+                          String phone = phoneController.text;
+                          await phoneAuth.verifyPhoneNumber(
+                            phoneNumber: phone,
+                            verificationCompleted:
+                                (PhoneAuthCredential credential) async {
+                              await FirebaseAuth.instance.currentUser
+                                  ?.linkWithCredential(credential);
+
+                              EasyLoading.showSuccess('Linking successful');
+                              ref
+                                  .read(loginControllerProvider.notifier)
+                                  .changeIsLoggedIn(true);
+                            },
+                            verificationFailed: (FirebaseAuthException e) {
+                              EasyLoading.showError(
+                                  FirebaseErrorHelper.getErrorMessage(e));
+                              if (kDebugMode) {
+                                print(e);
+                              }
+                            },
+                            codeSent:
+                                (String verificationId, int? resendToken) {
+                              // verificationCode.state = verificationId;
+                              ref
+                                  .read(verificationCodeProvider.notifier)
+                                  .state = verificationId;
+                              EasyLoading.showSuccess('Verification code sent');
+                              ref.read(showPhoneFieldProvider.notifier).state =
+                                  false;
+                            },
+                            codeAutoRetrievalTimeout:
+                                (String verificationId) {},
+                          );
+                        } on FirebaseAuthException catch (e) {
+                          EasyLoading.showError(
+                              FirebaseErrorHelper.getErrorMessage(e));
+                          if (kDebugMode) {
+                            print(e);
+                          }
+                        } catch (e) {
+                          if (kDebugMode) {
+                            print(e);
+                          }
+                          EasyLoading.showError('Something went wrong');
+                        }
+                      },
+                      child: const Text('Send verification code'),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            SizedBox(
-              height: 24.h,
-            ),
-            // TextButton(
-            //   onPressed: () {
-            //     ref
-            //         .read(accountSetupControllerProvider.notifier)
-            //         .resendVerificationRequest(email);
-            //   },
-            //   style: textButtonStyle,
-            //   child: const Text(
-            //     'Resend',
-            //   ),
-            // ),
-          ],
+              SizedBox(height: 64.h),
+              Visibility(
+                visible: !showPhoneField,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SportsflickrTextFormField(
+                      controller: verificationCodeController,
+                      keyboardType: TextInputType.phone,
+                      labelText: 'Verification code',
+                    ),
+                    SizedBox(height: 24.h),
+                    ElevatedButton(
+                      style: primaryButtonStyle,
+                      onPressed: () async {
+                        try {
+                          EasyLoading.show(status: 'Linking your phone...');
+                          String verificationCodeValue =
+                              verificationCodeController.text;
+                          final credential = PhoneAuthProvider.credential(
+                              verificationId: verificationCode,
+                              smsCode: verificationCodeValue);
+                          await FirebaseAuth.instance.currentUser
+                              ?.linkWithCredential(credential);
+                          EasyLoading.showSuccess('Linking Successful');
+
+                          ref.read(showPhoneFieldProvider.notifier).state =
+                              true;
+                          // clear all controllers
+                          phoneController.clear();
+                          verificationCodeController.clear();
+                          ref
+                              .read(loginControllerProvider.notifier)
+                              .cleanState();
+                          ref
+                              .read(registerControllerProvider.notifier)
+                              .cleanRegisterState();
+
+                          if (context.mounted) {
+                            context.goNamed(ProfileView.routeName);
+                          }
+                        } catch (e) {
+                          if (kDebugMode) {
+                            print('error for login: $e');
+                          }
+                        }
+                      },
+                      child: const Text('Login'),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 32.h),
+              TextButton(
+                onPressed: () {
+                  context.goNamed(ProfileView.routeName);
+                },
+                child: const Text('Skip for now'),
+              ),
+            ],
+          ),
         ),
       ),
     );

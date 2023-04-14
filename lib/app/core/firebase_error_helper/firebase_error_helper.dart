@@ -35,7 +35,7 @@ class FirebaseErrorHelper {
       case 'too-many-requests':
         return 'Too many requests. Please try again later.';
       case 'requires-recent-login':
-        return 'This action requires you to log in again.';
+        return 'This action requires you to log out and log in again.';
       default:
         print(error.code);
         print(error.stackTrace);
