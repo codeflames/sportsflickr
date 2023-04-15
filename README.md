@@ -53,7 +53,14 @@ Database
 Getting Started
 ---------------
 
-To get started, download the app from the Google Play Store or Apple App Store. After installation, create a new account or login using your existing credentials. Once you are logged in, you can update your profile, explore potential networking opportunities, and connect with like-minded sports enthusiasts.
+To get started, download the app [Here](https://drive.google.com/file/d/16S0T1ph5YwybO0_D6JNr7RP3BOHLD3Yi/view?usp=sharing). After installation, create a new account or login using your existing credentials. Once you are logged in, you can update your profile, and do other things.
+
+OR
+
+*   Clone the repository
+*   Run `flutter pub get` to install dependencies
+*   Run `flutter run` to run the app
+
 
 Privacy and Security
 --------------------
@@ -65,9 +72,10 @@ Privacy and Security
 Contact Us
 ----------
 
-If you have any questions or feedback, please contact us at sportsbuddyfinder@support.com.
+If you have any questions or feedback, please contact us at yerekadonald+sportsflickr@gmail.com
 
 Credits
 -------
+BrilloConnetz interview project.
 
-This app was developed by [Yereka Ueh-kabari](https://github.com/codeflames).
+This app was developed and is maintained by [Yereka Ueh-kabari](https://github.com/codeflames).
