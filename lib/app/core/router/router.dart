@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -28,8 +31,11 @@ GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>();
 ///
 final routerProvider = Provider<GoRouter>(
   (ref) {
+    log(FirebaseAuth.instance.currentUser.toString());
     return GoRouter(
-      initialLocation: RegisterView.routeName,
+      initialLocation: FirebaseAuth.instance.currentUser != null
+          ? LoginView.routeName
+          : RegisterView.routeName,
       navigatorKey: _navigatorKey,
       debugLogDiagnostics: true,
       // redirect: (context, state) {},

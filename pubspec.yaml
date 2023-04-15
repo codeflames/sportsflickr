@@ -57,17 +57,17 @@ dependencies:
   url_launcher: ^6.1.10
 
 flutter_native_splash:
-  color: "#536BE5"
+  color: "#F6F6F6"
   image: "assets/images/logo_sportsflickr.png"
   branding: assets/images/logo_sportsflickr.png
   branding_mode: bottomLeft
   color_dark: "#536BE5"
-  image_dark: "assets/images/logo_sportsflickr.png"
-  branding_dark: assets/images/logo_sportsflickr.png
+  image_dark: "assets/images/sportsflickr_dark.png"
+  branding_dark: assets/images/sportsflickr_dark.png
   android_12:
     image: assets/images/logo_sportsflickr.png
-    icon_background_color: "#536BE5"
-    image_dark: assets/images/logo_sportsflickr.png
+    icon_background_color: "#f6f6f6"
+    image_dark: assets/images/sportsflickr_dark.png
     icon_background_color_dark: "#536BE5"
   web: false
 

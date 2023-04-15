@@ -27,69 +27,75 @@ class ThemeSettingsView extends ConsumerWidget {
       }
     }
 
-    return Scaffold(
-      appBar: SportsflickrAppBar(
-        title: Text('Theme Settings', style: redHatDisplayBold16),
-        onPressed: () => context.goNamed(SettingsView.routeName),
-      ),
-      body: Padding(
-        padding: paddingH24,
-        child: Column(
-          // mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(
-              height: 24.h,
-            ),
-            CupertinoFormRow(
-              prefix: Text(
-                'System',
-                style: redHatDisplayMedium16,
+    return WillPopScope(
+      onWillPop: () async {
+        context.goNamed(SettingsView.routeName);
+        return false;
+      },
+      child: Scaffold(
+        appBar: SportsflickrAppBar(
+          title: Text('Theme Settings', style: redHatDisplayBold16),
+          onPressed: () => context.goNamed(SettingsView.routeName),
+        ),
+        body: Padding(
+          padding: paddingH24,
+          child: Column(
+            // mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(
+                height: 24.h,
               ),
-              child: Transform.scale(
-                scale: 0.7,
-                child: CupertinoSwitch(
-                  activeColor: five36BE5.withOpacity(.4),
-                  thumbColor: mode == ThemeMode.system ? five36BE5 : null,
-                  // trackColor: ,
-                  value: mode == ThemeMode.system,
-                  onChanged: (value) => updateMode('system'),
+              CupertinoFormRow(
+                prefix: Text(
+                  'System',
+                  style: redHatDisplayMedium16,
+                ),
+                child: Transform.scale(
+                  scale: 0.7,
+                  child: CupertinoSwitch(
+                    activeColor: five36BE5.withOpacity(.4),
+                    thumbColor: mode == ThemeMode.system ? five36BE5 : null,
+                    // trackColor: ,
+                    value: mode == ThemeMode.system,
+                    onChanged: (value) => updateMode('system'),
+                  ),
                 ),
               ),
-            ),
-            CupertinoFormRow(
-              prefix: Text(
-                'Light Mode',
-                style: redHatDisplayMedium16,
-              ),
-              child: Transform.scale(
-                scale: 0.7,
-                child: CupertinoSwitch(
-                  activeColor: five36BE5.withOpacity(.4),
-                  thumbColor: mode == ThemeMode.light ? five36BE5 : null,
-                  // trackColor: ,
-                  value: mode == ThemeMode.light,
-                  onChanged: (value) => updateMode('light'),
+              CupertinoFormRow(
+                prefix: Text(
+                  'Light Mode',
+                  style: redHatDisplayMedium16,
+                ),
+                child: Transform.scale(
+                  scale: 0.7,
+                  child: CupertinoSwitch(
+                    activeColor: five36BE5.withOpacity(.4),
+                    thumbColor: mode == ThemeMode.light ? five36BE5 : null,
+                    // trackColor: ,
+                    value: mode == ThemeMode.light,
+                    onChanged: (value) => updateMode('light'),
+                  ),
                 ),
               ),
-            ),
-            CupertinoFormRow(
-              prefix: Text(
-                'Dark Mode',
-                style: redHatDisplayMedium16,
-              ),
-              child: Transform.scale(
-                scale: 0.7,
-                child: CupertinoSwitch(
-                  activeColor: five36BE5.withOpacity(.4),
-                  thumbColor: mode == ThemeMode.dark ? five36BE5 : null,
-                  // trackColor: ,
-                  value: mode == ThemeMode.dark,
-                  onChanged: (value) => updateMode('dark'),
+              CupertinoFormRow(
+                prefix: Text(
+                  'Dark Mode',
+                  style: redHatDisplayMedium16,
+                ),
+                child: Transform.scale(
+                  scale: 0.7,
+                  child: CupertinoSwitch(
+                    activeColor: five36BE5.withOpacity(.4),
+                    thumbColor: mode == ThemeMode.dark ? five36BE5 : null,
+                    // trackColor: ,
+                    value: mode == ThemeMode.dark,
+                    onChanged: (value) => updateMode('dark'),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

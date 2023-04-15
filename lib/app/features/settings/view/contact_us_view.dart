@@ -50,96 +50,103 @@ class ContactUsView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedSubject = ref.watch(selectedSubjectProvider);
     final subjects = ref.watch(_subjectProvider);
-    return Scaffold(
-      appBar: SportsflickrAppBar(
-        title: Text('Contact Us', style: redHatDisplayBold14),
-        onPressed: () {
-          ref.read(selectedSubjectProvider.notifier).state = [];
-          context.goNamed(SettingsView.routeName);
-        },
-      ),
-      body: SafeArea(
-        child: Container(
-          height: sportsflickrScreenHeight(context),
-          padding: paddingH24,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(height: 24.h),
-              Text('Select email subject:', style: redHatDisplayBold14),
-              SizedBox(height: 24.h),
-              Wrap(
-                spacing: 8.w,
-                runSpacing: 8.h,
-                children: [
-                  for (final subject in subjects)
-                    GestureDetector(
-                      onTap: () {
-                        ref.read(selectedSubjectProvider.notifier).state = [];
-                        ref
-                            .read(selectedSubjectProvider.notifier)
-                            .state
-                            .add(subject);
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 8.w,
-                          vertical: 4.h,
-                        ),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: subject.color.withOpacity(.4),
-                            width: 1,
+    return WillPopScope(
+      onWillPop: () async {
+        ref.read(selectedSubjectProvider.notifier).state = [];
+        context.goNamed(SettingsView.routeName);
+        return false;
+      },
+      child: Scaffold(
+        appBar: SportsflickrAppBar(
+          title: Text('Contact Us', style: redHatDisplayBold14),
+          onPressed: () {
+            ref.read(selectedSubjectProvider.notifier).state = [];
+            context.goNamed(SettingsView.routeName);
+          },
+        ),
+        body: SafeArea(
+          child: Container(
+            height: sportsflickrScreenHeight(context),
+            padding: paddingH24,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(height: 24.h),
+                Text('Select email subject:', style: redHatDisplayBold14),
+                SizedBox(height: 24.h),
+                Wrap(
+                  spacing: 8.w,
+                  runSpacing: 8.h,
+                  children: [
+                    for (final subject in subjects)
+                      GestureDetector(
+                        onTap: () {
+                          ref.read(selectedSubjectProvider.notifier).state = [];
+                          ref
+                              .read(selectedSubjectProvider.notifier)
+                              .state
+                              .add(subject);
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8.w,
+                            vertical: 4.h,
                           ),
-                          color: subject.color.withOpacity(.5),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(subject.subject, style: redHatDisplayBold14),
-                            SizedBox(width: 8.w),
-                            selectedSubject.isNotEmpty &&
-                                    selectedSubject[0] == subject
-                                ? Container(
-                                    width: 20.w,
-                                    height: 20.w,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: subject.color,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: subject.color.withOpacity(.4),
+                              width: 1,
+                            ),
+                            color: subject.color.withOpacity(.5),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(subject.subject, style: redHatDisplayBold14),
+                              SizedBox(width: 8.w),
+                              selectedSubject.isNotEmpty &&
+                                      selectedSubject[0] == subject
+                                  ? Container(
+                                      width: 20.w,
+                                      height: 20.w,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: subject.color,
+                                      ),
+                                      child: const Icon(
+                                        Icons.check,
+                                        color: ffffff,
+                                        size: 14,
+                                      ))
+                                  : SizedBox(
+                                      width: 20.w,
+                                      height: 20.w,
                                     ),
-                                    child: const Icon(
-                                      Icons.check,
-                                      color: ffffff,
-                                      size: 14,
-                                    ))
-                                : SizedBox(
-                                    width: 20.w,
-                                    height: 20.w,
-                                  ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                ],
-              ),
-              const Spacer(),
-              ElevatedButton(
-                  style: primaryButtonStyle,
-                  onPressed: () async {
-                    String email = Uri.encodeComponent(
-                        "yerekadonald+sportsflickr@gmail.com");
-                    String subject =
-                        Uri.encodeComponent(selectedSubject[0].subject);
-                    String body = Uri.encodeComponent("Hi Sportsflickr,\n\n");
-                    log(subject);
-                    log(body); //output: Hello%20Flutter
-                    Uri mail =
-                        Uri.parse("mailto:$email?subject=$subject&body=$body");
-                    await launchUrl(mail);
-                  },
-                  child: const Text('Proceed to email')),
-            ],
+                  ],
+                ),
+                const Spacer(),
+                ElevatedButton(
+                    style: primaryButtonStyle,
+                    onPressed: () async {
+                      String email = Uri.encodeComponent(
+                          "yerekadonald+sportsflickr@gmail.com");
+                      String subject =
+                          Uri.encodeComponent(selectedSubject[0].subject);
+                      String body = Uri.encodeComponent("Hi Sportsflickr,\n\n");
+                      log(subject);
+                      log(body); //output: Hello%20Flutter
+                      Uri mail = Uri.parse(
+                          "mailto:$email?subject=$subject&body=$body");
+                      await launchUrl(mail);
+                    },
+                    child: const Text('Proceed to email')),
+              ],
+            ),
           ),
         ),
       ),

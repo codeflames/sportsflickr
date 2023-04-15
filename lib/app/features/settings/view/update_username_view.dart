@@ -22,62 +22,68 @@ class UpdateUsernameView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      appBar: SportsflickrAppBar(
-        title: Text('Update Username', style: redHatDisplayBold14),
-        onPressed: () => context.goNamed(SettingsView.routeName),
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          height: sportsflickrScreenHeight(context),
-          padding: paddingH24,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(height: 24.h),
-              Text(
-                  'Warning:\nYour buddies might be confused if you change your username.\nAnother person can claim the username after you change it',
-                  style: redHatDisplayBold14.copyWith(color: fF0000)),
-              SizedBox(height: 24.h),
-              Text(
-                'Enter your current username and your new username below.',
-                style: redHatDisplayBold14,
-              ),
-              SizedBox(height: 24.h),
-              // SportsflickrTextFormField(
-              //   labelText: 'Your current username',
-              //   controller: _currentUsernameController,
-              // ),
-              SizedBox(height: 24.h),
-              Form(
-                key: _formKey,
-                child: SportsflickrTextFormField(
-                  labelText: 'Your new username',
-                  controller: _newUsernameController,
+    return WillPopScope(
+      onWillPop: () async {
+        context.goNamed(SettingsView.routeName);
+        return false;
+      },
+      child: Scaffold(
+        appBar: SportsflickrAppBar(
+          title: Text('Update Username', style: redHatDisplayBold14),
+          onPressed: () => context.goNamed(SettingsView.routeName),
+        ),
+        body: SingleChildScrollView(
+          child: Container(
+            height: sportsflickrScreenHeight(context),
+            padding: paddingH24,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(height: 24.h),
+                Text(
+                    'Warning:\nYour buddies might be confused if you change your username.\nAnother person can claim the username after you change it',
+                    style: redHatDisplayBold14.copyWith(color: fF0000)),
+                SizedBox(height: 24.h),
+                Text(
+                  'Enter your current username and your new username below.',
+                  style: redHatDisplayBold14,
                 ),
-              ),
-              SizedBox(height: 48.h),
-              ElevatedButton(
-                style: primaryButtonStyle,
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    EasyLoading.show(status: 'Updating username...');
-                    try {
-                      await FirebaseAuth.instance.currentUser!
-                          .updateDisplayName(
-                              _newUsernameController.text.trim());
-                      EasyLoading.showSuccess('Username updated');
-                      if (context.mounted) {
-                        context.goNamed(ProfileView.routeName);
+                SizedBox(height: 24.h),
+                // SportsflickrTextFormField(
+                //   labelText: 'Your current username',
+                //   controller: _currentUsernameController,
+                // ),
+                SizedBox(height: 24.h),
+                Form(
+                  key: _formKey,
+                  child: SportsflickrTextFormField(
+                    labelText: 'Your new username',
+                    controller: _newUsernameController,
+                  ),
+                ),
+                SizedBox(height: 48.h),
+                ElevatedButton(
+                  style: primaryButtonStyle,
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      EasyLoading.show(status: 'Updating username...');
+                      try {
+                        await FirebaseAuth.instance.currentUser!
+                            .updateDisplayName(
+                                _newUsernameController.text.trim());
+                        EasyLoading.showSuccess('Username updated');
+                        if (context.mounted) {
+                          context.goNamed(ProfileView.routeName);
+                        }
+                      } catch (e) {
+                        EasyLoading.showError('Error updating username');
                       }
-                    } catch (e) {
-                      EasyLoading.showError('Error updating username');
                     }
-                  }
-                },
-                child: Text('Update Username', style: redHatDisplayBold14),
-              ),
-            ],
+                  },
+                  child: Text('Update Username', style: redHatDisplayBold14),
+                ),
+              ],
+            ),
           ),
         ),
       ),

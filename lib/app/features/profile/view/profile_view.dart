@@ -27,10 +27,10 @@ class ProfileView extends ConsumerWidget {
 
     return SafeArea(
       child: Scaffold(
-        body: SingleChildScrollView(
-          child: Container(
-            padding: paddingH24,
-            height: sportsflickrScreenHeight(context) - 54.h,
+        body: Container(
+          padding: paddingH24,
+          height: sportsflickrScreenHeight(context) - 54.h,
+          child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
@@ -78,21 +78,38 @@ class ProfileView extends ConsumerWidget {
                     textAlign: TextAlign.center),
                 SizedBox(height: 8.h),
                 //email
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(userChanges?.email ?? '',
-                        style: redHatDisplayMedium12,
-                        textAlign: TextAlign.center),
-                    SizedBox(width: 8.w),
-                    userChanges?.emailVerified == true
-                        ? Icon(
+                userChanges?.email != null
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(userChanges?.email ?? '',
+                              style: redHatDisplayMedium14,
+                              textAlign: TextAlign.center),
+                          SizedBox(width: 8.w),
+                          userChanges?.emailVerified == true
+                              ? Icon(
+                                  Icons.verified,
+                                  size: 16.h,
+                                )
+                              : const SizedBox(),
+                        ],
+                      )
+                    : const SizedBox.shrink(),
+                userChanges?.phoneNumber != null
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(userChanges?.phoneNumber ?? '',
+                              style: redHatDisplayMedium14,
+                              textAlign: TextAlign.center),
+                          SizedBox(width: 8.w),
+                          Icon(
                             Icons.verified,
                             size: 16.h,
                           )
-                        : const SizedBox(),
-                  ],
-                ),
+                        ],
+                      )
+                    : const SizedBox.shrink(),
                 // SizedBox(height: 8.h),
                 userChanges?.emailVerified == true
                     ? const SizedBox()
@@ -150,14 +167,16 @@ class ProfileView extends ConsumerWidget {
                     return InterestWidget(sport: sportsList[index]['name']);
                   },
                 ),
-                sportsList.length > 6
+                sportsList.length < 6
                     ? Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
                           style: textButtonStyle.copyWith(
                               padding: MaterialStateProperty.all<EdgeInsets>(
                                   EdgeInsets.symmetric(horizontal: 4.w))),
-                          onPressed: () {},
+                          onPressed: () {
+                            EasyLoading.showInfo('Not implemented yet :(');
+                          },
                           child: const Text(
                             'See More Interests',
                           ),
@@ -165,31 +184,14 @@ class ProfileView extends ConsumerWidget {
                       )
                     : Container(),
                 SizedBox(height: 24.h),
-                // Text(
-                //   'Messages',
-                //   style: redHatDisplayBold16,
-                // ),
-                // SizedBox(height: 16.h),
-                // Row(
-                //   children: [
-                //     Icon(Icons.email, color: five36BE5.withOpacity(.8)),
-                //     SizedBox(width: 8.w),
-                //     Text(
-                //       'You have 3 unread messages',
-                //       style: redHatDisplayMedium14,
-                //     ),
-                //     const Spacer(),
-                //     Icon(Icons.arrow_forward_ios,
-                //         size: 16.h, color: five36BE5.withOpacity(.8)),
-                //   ],
-                // ),
-                // SizedBox(height: 24.h),
+
                 Text(
                   'Favorite Teams',
                   style: redHatDisplayBold16,
                 ),
                 SizedBox(height: 16.h),
-                Expanded(
+                SizedBox(
+                  height: 100.h,
                   child: ListView.builder(
                     shrinkWrap: true,
                     scrollDirection: Axis.horizontal,
@@ -268,6 +270,61 @@ class ProfileView extends ConsumerWidget {
                 ),
                 // SizedBox(height: 16.h),
                 // const Spacer(),
+                SizedBox(height: 24.h),
+                Row(
+                  children: [
+                    // two Containers for followers and following and their numbers
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 8.w, vertical: 16.h),
+                        decoration: BoxDecoration(
+                          color: five36BE5.withOpacity(.03),
+                          borderRadius: borderRadius4,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Followers',
+                              style: redHatDisplayBold14,
+                            ),
+                            SizedBox(width: 8.w),
+                            Text(
+                              '1050',
+                              style: redHatDisplayRegular14,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 8.w),
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 8.w, vertical: 16.h),
+                        decoration: BoxDecoration(
+                          color: five36BE5.withOpacity(.03),
+                          borderRadius: borderRadius4,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Following',
+                              style: redHatDisplayBold14,
+                            ),
+                            SizedBox(width: 8.w),
+                            Text(
+                              '100',
+                              style: redHatDisplayRegular14,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
                 SizedBox(
                   height: 40.h,
                 ),
