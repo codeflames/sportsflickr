@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sportsflickr/app/features/buddies/view/buddies_view.dart';
 import 'package:sportsflickr/app/features/discover/view/discover_view.dart';
+import 'package:sportsflickr/app/features/login/view/forgot_password_view.dart';
 import 'package:sportsflickr/app/features/login/view/login_view.dart';
 import 'package:sportsflickr/app/features/profile/view/profile_view.dart';
 import 'package:sportsflickr/app/features/register/view/select_sport_interests.dart';
@@ -56,6 +57,10 @@ final routerProvider = Provider<GoRouter>(
             path: LoginView.routeName,
             name: LoginView.routeName,
             builder: (context, state) => LoginView()),
+        GoRoute(
+            path: ForgotPasswordView.routeName,
+            name: ForgotPasswordView.routeName,
+            builder: (context, state) => ForgotPasswordView()),
         ShellRoute(
           builder: (context, state, child) => MainView(child: child),
           navigatorKey: _shellNavigatorKey,

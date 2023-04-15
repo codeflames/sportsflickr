@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -104,6 +105,13 @@ class UpdateEmailView extends ConsumerWidget {
                           EasyLoading.dismiss();
                           EasyLoading.showError('Something went wrong');
                         }
+                        FirebaseAnalytics.instance.logEvent(
+                          name: 'update_email',
+                          parameters: {
+                            'current_email': _currentEmailController.text,
+                            'new_email': _newEmailController.text,
+                          },
+                        );
                       }
 
                       // FirebaseAuth.instance.currentUser

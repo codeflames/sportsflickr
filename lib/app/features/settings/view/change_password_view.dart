@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -198,6 +199,13 @@ class ChangePasswordView extends ConsumerWidget {
                               }
                               ref.read(_codeSentProvider.notifier).state =
                                   false;
+                              FirebaseAnalytics.instance.logEvent(
+                                  name: 'change_password',
+                                  parameters: {
+                                    'email': _emailController.text,
+                                    'user':
+                                        FirebaseAuth.instance.currentUser!.uid,
+                                  });
                             })
                       ],
                     ),

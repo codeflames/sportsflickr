@@ -51,6 +51,7 @@ class RegisterController extends StateNotifier<RegisterState> {
         'error': e.toString(),
       });
     }
+    FirebaseAnalytics.instance.logSignUp(signUpMethod: 'email');
   }
 
   Future<void> addUserDetails(

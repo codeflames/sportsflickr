@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -45,6 +46,7 @@ class LoginController extends StateNotifier<LoginState> {
     } finally {
       EasyLoading.dismiss();
     }
+    FirebaseAnalytics.instance.logLogin();
   }
 
   void logState() {

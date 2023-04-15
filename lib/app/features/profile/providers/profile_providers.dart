@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -57,5 +58,8 @@ class ProfileController extends StateNotifier {
     } else {
       EasyLoading.showError('No image selected');
     }
+    FirebaseAnalytics.instance.logEvent(name: 'upload_image', parameters: {
+      'user_id': FirebaseAuth.instance.currentUser!.uid,
+    });
   }
 }

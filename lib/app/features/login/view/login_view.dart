@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -12,6 +13,7 @@ import 'package:sportsflickr/app/core/theme/theme.dart';
 import 'package:sportsflickr/app/features/login/model/login_model.dart';
 import 'package:sportsflickr/app/features/login/model/login_request/login_request.dart';
 import 'package:sportsflickr/app/features/login/providers/login_providers.dart';
+import 'package:sportsflickr/app/features/login/view/forgot_password_view.dart';
 import 'package:sportsflickr/app/features/profile/view/profile_view.dart';
 import 'package:sportsflickr/app/features/register/model/sports_interest_state.dart';
 import 'package:sportsflickr/app/features/register/view/register_view.dart';
@@ -134,7 +136,9 @@ class LoginView extends ConsumerWidget {
                                           const EdgeInsets.symmetric(
                                               horizontal: 4, vertical: 0)),
                                 ),
-                                onPressed: () {},
+                                onPressed: () {
+                                  context.goNamed(ForgotPasswordView.routeName);
+                                },
                                 child: const Text('Forgot Password?'))),
                         SizedBox(height: 16.h),
                         ElevatedButton(
@@ -288,6 +292,7 @@ class LoginView extends ConsumerWidget {
                                   }
                                   EasyLoading.showError('Something went wrong');
                                 }
+                                FirebaseAnalytics.instance.logLogin();
                               },
                               child: const Text('Send verification code'),
                             ),
@@ -335,6 +340,7 @@ class LoginView extends ConsumerWidget {
                                     log('error for login: $e');
                                   }
                                 }
+                                FirebaseAnalytics.instance.logLogin();
                               },
                               child: const Text('Login'),
                             ),

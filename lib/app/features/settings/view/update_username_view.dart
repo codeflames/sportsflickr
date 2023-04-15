@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -15,8 +16,6 @@ class UpdateUsernameView extends ConsumerWidget {
 
   static const routeName = '/settings/update-username';
 
-  // final TextEditingController _currentUsernameController =
-  //     TextEditingController();
   final TextEditingController _newUsernameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
@@ -78,6 +77,11 @@ class UpdateUsernameView extends ConsumerWidget {
                       } catch (e) {
                         EasyLoading.showError('Error updating username');
                       }
+                      FirebaseAnalytics.instance.logEvent(
+                          name: 'update_username',
+                          parameters: {
+                            'username': _newUsernameController.text
+                          });
                     }
                   },
                   child: Text('Update Username', style: redHatDisplayBold14),
