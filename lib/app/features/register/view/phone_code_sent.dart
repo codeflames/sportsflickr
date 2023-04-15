@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -63,13 +65,11 @@ class PhoneCodeSentSentPage extends ConsumerWidget {
                   children: [
                     InternationalPhoneNumberInput(
                       onInputChanged: (PhoneNumber number) {
-                        print(number.phoneNumber);
+                        log(number.phoneNumber.toString());
                         phoneController.text = number.phoneNumber!;
                       },
                       initialValue: number,
-                      onInputValidated: (bool value) {
-                        print(value);
-                      },
+                      onInputValidated: (bool value) {},
                       selectorConfig: const SelectorConfig(
                         selectorType: PhoneInputSelectorType.DIALOG,
                         setSelectorButtonAsPrefixIcon: true,
@@ -86,7 +86,7 @@ class PhoneCodeSentSentPage extends ConsumerWidget {
                           signed: true, decimal: true),
                       inputDecoration: inputDecoration,
                       onSaved: (PhoneNumber number) {
-                        print('On Saved: $number');
+                        log('On Saved: $number');
                       },
                     ),
                     SizedBox(height: 24.h),
@@ -113,7 +113,7 @@ class PhoneCodeSentSentPage extends ConsumerWidget {
                               EasyLoading.showError(
                                   FirebaseErrorHelper.getErrorMessage(e));
                               if (kDebugMode) {
-                                print(e);
+                                log(e.toString());
                               }
                             },
                             codeSent:
@@ -133,11 +133,11 @@ class PhoneCodeSentSentPage extends ConsumerWidget {
                           EasyLoading.showError(
                               FirebaseErrorHelper.getErrorMessage(e));
                           if (kDebugMode) {
-                            print(e);
+                            log(e.toString());
                           }
                         } catch (e) {
                           if (kDebugMode) {
-                            print(e);
+                            log(e.toString());
                           }
                           EasyLoading.showError('Something went wrong');
                         }
@@ -190,7 +190,7 @@ class PhoneCodeSentSentPage extends ConsumerWidget {
                           }
                         } catch (e) {
                           if (kDebugMode) {
-                            print('error for login: $e');
+                            log('error for login: $e');
                           }
                         }
                       },

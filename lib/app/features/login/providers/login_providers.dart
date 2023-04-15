@@ -2,14 +2,11 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sportsflickr/app/core/firebase_error_helper/firebase_error_helper.dart';
-import 'package:sportsflickr/app/core/router/router.dart';
 import 'package:sportsflickr/app/features/login/model/login_model.dart';
 import 'package:sportsflickr/app/features/login/model/login_request/login_request.dart';
-import 'package:sportsflickr/app/features/login/view/login_view.dart';
 import 'package:sportsflickr/app/features/register/model/sports_interest_state.dart';
 
 final loginControllerProvider =
@@ -39,11 +36,10 @@ class LoginController extends StateNotifier<LoginState> {
         state = state.copyWith(isLoggedIn: true);
       }
     } on FirebaseAuthException catch (e) {
-      print(e.toString());
+      log(e.toString());
       final error = FirebaseErrorHelper.getErrorMessage(e);
       EasyLoading.showError(error);
     } catch (e) {
-      print(e);
       log(e.toString());
       EasyLoading.showError('An error occurred');
     } finally {

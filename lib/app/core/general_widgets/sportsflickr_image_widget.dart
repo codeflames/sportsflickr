@@ -37,7 +37,7 @@ class _SportsflickrImageWidgetState extends State<SportsflickrImageWidget> {
             )),
         child: Center(
           child: imageFile == null
-              ? Icon(Icons.add_a_photo)
+              ? const Icon(Icons.add_a_photo)
               : Image.file(imageFile!, fit: BoxFit.cover),
         ),
       ),

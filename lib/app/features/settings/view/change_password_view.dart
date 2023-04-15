@@ -41,12 +41,12 @@ class ChangePasswordView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final _codeSent = ref.watch(_codeSentProvider);
+    final codeSent = ref.watch(_codeSentProvider);
     return Scaffold(
       appBar: SportsflickrAppBar(
         title: Text('Change Password', style: redHatDisplayBold14),
         onPressed: () {
-          _codeSent
+          codeSent
               ? ref.read(_codeSentProvider.notifier).state = false
               : log('state not changed');
           clearAllControllers();
@@ -61,7 +61,7 @@ class ChangePasswordView extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Visibility(
-                visible: !_codeSent,
+                visible: !codeSent,
                 child: Form(
                   key: _formKey,
                   child: ListView(
@@ -102,7 +102,7 @@ class ChangePasswordView extends ConsumerWidget {
                 ),
               ),
               Visibility(
-                visible: _codeSent,
+                visible: codeSent,
                 child: Form(
                   key: _secondFormKey,
                   child: ListView(
@@ -170,11 +170,11 @@ class ChangePasswordView extends ConsumerWidget {
                                 }
                                 clearAllControllers();
                               } on FirebaseAuthException catch (e) {
-                                print(e);
+                                log(e.toString());
                                 EasyLoading.showError(
                                     FirebaseErrorHelper.getErrorMessage(e));
                               } catch (e) {
-                                print(e);
+                                log(e.toString());
                                 EasyLoading.showError('Something went wrong');
                               } finally {
                                 EasyLoading.dismiss();

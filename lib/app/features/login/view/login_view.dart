@@ -42,6 +42,7 @@ class LoginView extends ConsumerWidget {
       TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _secondFormKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -50,7 +51,6 @@ class LoginView extends ConsumerWidget {
     final showEmailField = ref.watch(showEmailFieldProvider);
     final showPhoneField = ref.watch(showPhoneFieldProvider);
 
-    String initialCountry = 'NG';
     PhoneNumber number = PhoneNumber(isoCode: 'NG');
 
     ref.listen<LoginState>(loginControllerProvider, (prev, next) {
@@ -102,236 +102,247 @@ class LoginView extends ConsumerWidget {
         padding: paddingH24,
         child: showEmailField
             ? SingleChildScrollView(
-                child: Column(
+                child: Form(
+                  key: _secondFormKey,
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      // mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(height: 32.h),
+                        SvgPicture.asset(Assets.images.logoSportsflickrSvg,
+                            width: 100.h, height: 100.h),
+                        Text(
+                          'SportsFlickr Email Login',
+                          style: redHatDisplayBold20,
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: 32.h),
+                        SportsflickrEmailField(
+                          controller: _emailController,
+                        ),
+                        SizedBox(height: 16.h),
+                        SportsflickrPasswordField(
+                          controller: _passwordController,
+                        ),
+                        SizedBox(height: 16.h),
+                        Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                                style: textButtonStyle.copyWith(
+                                  padding:
+                                      MaterialStateProperty.all<EdgeInsets>(
+                                          const EdgeInsets.symmetric(
+                                              horizontal: 4, vertical: 0)),
+                                ),
+                                onPressed: () {},
+                                child: const Text('Forgot Password?'))),
+                        SizedBox(height: 16.h),
+                        ElevatedButton(
+                          style: primaryButtonStyle,
+                          onPressed: () {
+                            ref.read(loginControllerProvider.notifier).login(
+                                  LoginRequest(
+                                    email: _emailController.text,
+                                    password: _passwordController.text,
+                                  ),
+                                );
+                          },
+                          child: const Text('Login'),
+                        ),
+                        SizedBox(height: 48.h),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('Don\'t have an account?',
+                                style: redHatDisplayRegular14),
+                            TextButton(
+                                style: textButtonStyle.copyWith(
+                                  padding:
+                                      MaterialStateProperty.all<EdgeInsets>(
+                                          const EdgeInsets.symmetric(
+                                              horizontal: 4, vertical: 0)),
+                                ),
+                                onPressed: () {
+                                  context.goNamed(RegisterView.routeName);
+                                },
+                                child: const Text('Register'))
+                          ],
+                        ),
+                      ]),
+                ),
+              )
+            : SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    // mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SizedBox(height: 32.h),
                       SvgPicture.asset(Assets.images.logoSportsflickrSvg,
                           width: 100.h, height: 100.h),
                       Text(
-                        'SportsFlickr Email Login',
+                        'SportsFlickr Phone Login',
                         style: redHatDisplayBold20,
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: 32.h),
-                      SportsflickrEmailField(
-                        controller: _emailController,
-                      ),
-                      SizedBox(height: 16.h),
-                      SportsflickrPasswordField(
-                        controller: _passwordController,
-                      ),
-                      SizedBox(height: 16.h),
-                      Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                              style: textButtonStyle.copyWith(
-                                padding: MaterialStateProperty.all<EdgeInsets>(
-                                    const EdgeInsets.symmetric(
-                                        horizontal: 4, vertical: 0)),
-                              ),
-                              onPressed: () {},
-                              child: const Text('Forgot Password?'))),
-                      SizedBox(height: 16.h),
-                      ElevatedButton(
-                        style: primaryButtonStyle,
-                        onPressed: () {
-                          ref.read(loginControllerProvider.notifier).login(
-                                LoginRequest(
-                                  email: _emailController.text,
-                                  password: _passwordController.text,
-                                ),
-                              );
-                        },
-                        child: const Text('Login'),
-                      ),
-                      SizedBox(height: 48.h),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('Don\'t have an account?',
-                              style: redHatDisplayRegular14),
-                          TextButton(
-                              style: textButtonStyle.copyWith(
-                                padding: MaterialStateProperty.all<EdgeInsets>(
-                                    const EdgeInsets.symmetric(
-                                        horizontal: 4, vertical: 0)),
-                              ),
-                              onPressed: () {
-                                context.goNamed(RegisterView.routeName);
+                      Visibility(
+                        visible: showPhoneField,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            // SportsflickrTextFormField(
+                            //   controller: phoneController,
+                            //   keyboardType: TextInputType.phone,
+                            //   labelText: 'Phone Number',
+                            // ),
+                            InternationalPhoneNumberInput(
+                              onInputChanged: (PhoneNumber number) {
+                                log(number.phoneNumber.toString());
+                                phoneController.text = number.phoneNumber!;
                               },
-                              child: const Text('Register'))
-                        ],
-                      ),
-                    ]),
-              )
-            : SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    SizedBox(height: 32.h),
-                    SvgPicture.asset(Assets.images.logoSportsflickrSvg,
-                        width: 100.h, height: 100.h),
-                    Text(
-                      'SportsFlickr Phone Login',
-                      style: redHatDisplayBold20,
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 32.h),
-                    Visibility(
-                      visible: showPhoneField,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          // SportsflickrTextFormField(
-                          //   controller: phoneController,
-                          //   keyboardType: TextInputType.phone,
-                          //   labelText: 'Phone Number',
-                          // ),
-                          InternationalPhoneNumberInput(
-                            onInputChanged: (PhoneNumber number) {
-                              print(number.phoneNumber);
-                              phoneController.text = number.phoneNumber!;
-                            },
-                            initialValue: number,
-                            onInputValidated: (bool value) {
-                              print(value);
-                            },
-                            selectorConfig: const SelectorConfig(
-                              selectorType: PhoneInputSelectorType.DIALOG,
-                              setSelectorButtonAsPrefixIcon: true,
-                              leadingPadding: 20,
+                              initialValue: number,
+                              onInputValidated: (bool value) {},
+                              selectorConfig: const SelectorConfig(
+                                selectorType: PhoneInputSelectorType.DIALOG,
+                                setSelectorButtonAsPrefixIcon: true,
+                                leadingPadding: 20,
+                              ),
+
+                              ignoreBlank: false,
+                              autoValidateMode: AutovalidateMode.disabled,
+
+                              // initialValue: number,
+                              // textFieldController: phoneController,
+                              formatInput: true,
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                      signed: true, decimal: true),
+                              inputDecoration: inputDecoration,
+                              onSaved: (PhoneNumber number) {
+                                log('On Saved: $number');
+                              },
                             ),
-
-                            ignoreBlank: false,
-                            autoValidateMode: AutovalidateMode.disabled,
-
-                            // initialValue: number,
-                            // textFieldController: phoneController,
-                            formatInput: true,
-                            keyboardType: const TextInputType.numberWithOptions(
-                                signed: true, decimal: true),
-                            inputDecoration: inputDecoration,
-                            onSaved: (PhoneNumber number) {
-                              print('On Saved: $number');
-                            },
-                          ),
-                          SizedBox(height: 24.h),
-                          ElevatedButton(
-                            style: primaryButtonStyle,
-                            onPressed: () async {
-                              try {
-                                EasyLoading.show(
-                                    status: 'Sending verification code...');
-                                String phone = phoneController.text;
-                                log(phone);
-                                await phoneAuth.verifyPhoneNumber(
-                                  phoneNumber: phone,
-                                  verificationCompleted:
-                                      (PhoneAuthCredential credential) async {
-                                    await FirebaseAuth.instance
-                                        .signInWithCredential(credential);
-                                    await ref
-                                        .read(sportsInterestControllerProvider
-                                            .notifier)
-                                        .getUserSelectedSportsInterest();
-                                    ref
-                                        .read(showPhoneFieldProvider.notifier)
-                                        .state = false;
-                                    EasyLoading.showSuccess('Login success');
-                                    ref
-                                        .read(loginControllerProvider.notifier)
-                                        .changeIsLoggedIn(true);
-                                  },
-                                  verificationFailed:
-                                      (FirebaseAuthException e) {
-                                    EasyLoading.showError(
-                                        FirebaseErrorHelper.getErrorMessage(e));
-                                    if (kDebugMode) {
-                                      print(e);
-                                    }
-                                  },
-                                  codeSent: (String verificationId,
-                                      int? resendToken) {
-                                    // verificationCode.state = verificationId;
-                                    ref
-                                        .read(verificationCodeProvider.notifier)
-                                        .state = verificationId;
-                                    EasyLoading.showSuccess(
-                                        'Verification code sent');
-                                    ref
-                                        .read(showPhoneFieldProvider.notifier)
-                                        .state = false;
-                                  },
-                                  codeAutoRetrievalTimeout:
-                                      (String verificationId) {},
-                                );
-                              } on FirebaseAuthException catch (e) {
-                                EasyLoading.showError(
-                                    FirebaseErrorHelper.getErrorMessage(e));
-                                if (kDebugMode) {
-                                  print(e);
+                            SizedBox(height: 24.h),
+                            ElevatedButton(
+                              style: primaryButtonStyle,
+                              onPressed: () async {
+                                try {
+                                  EasyLoading.show(
+                                      status: 'Sending verification code...');
+                                  String phone = phoneController.text;
+                                  log(phone);
+                                  await phoneAuth.verifyPhoneNumber(
+                                    phoneNumber: phone,
+                                    verificationCompleted:
+                                        (PhoneAuthCredential credential) async {
+                                      await FirebaseAuth.instance
+                                          .signInWithCredential(credential);
+                                      await ref
+                                          .read(sportsInterestControllerProvider
+                                              .notifier)
+                                          .getUserSelectedSportsInterest();
+                                      ref
+                                          .read(showPhoneFieldProvider.notifier)
+                                          .state = false;
+                                      EasyLoading.showSuccess('Login success');
+                                      ref
+                                          .read(
+                                              loginControllerProvider.notifier)
+                                          .changeIsLoggedIn(true);
+                                    },
+                                    verificationFailed:
+                                        (FirebaseAuthException e) {
+                                      EasyLoading.showError(
+                                          FirebaseErrorHelper.getErrorMessage(
+                                              e));
+                                      if (kDebugMode) {
+                                        log(e.toString());
+                                      }
+                                    },
+                                    codeSent: (String verificationId,
+                                        int? resendToken) {
+                                      // verificationCode.state = verificationId;
+                                      ref
+                                          .read(
+                                              verificationCodeProvider.notifier)
+                                          .state = verificationId;
+                                      EasyLoading.showSuccess(
+                                          'Verification code sent');
+                                      ref
+                                          .read(showPhoneFieldProvider.notifier)
+                                          .state = false;
+                                    },
+                                    codeAutoRetrievalTimeout:
+                                        (String verificationId) {},
+                                  );
+                                } on FirebaseAuthException catch (e) {
+                                  EasyLoading.showError(
+                                      FirebaseErrorHelper.getErrorMessage(e));
+                                  if (kDebugMode) {
+                                    log(e.toString());
+                                  }
+                                } catch (e) {
+                                  if (kDebugMode) {
+                                    log(e.toString());
+                                  }
+                                  EasyLoading.showError('Something went wrong');
                                 }
-                              } catch (e) {
-                                if (kDebugMode) {
-                                  print(e);
-                                }
-                                EasyLoading.showError('Something went wrong');
-                              }
-                            },
-                            child: const Text('Send verification code'),
-                          ),
-                        ],
+                              },
+                              child: const Text('Send verification code'),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 64.h),
-                    Visibility(
-                      visible: !showPhoneField,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          SportsflickrTextFormField(
-                            controller: verificationCodeController,
-                            keyboardType: TextInputType.phone,
-                            labelText: 'Verification code',
-                          ),
-                          SizedBox(height: 24.h),
-                          ElevatedButton(
-                            style: primaryButtonStyle,
-                            onPressed: () async {
-                              try {
-                                EasyLoading.show(status: 'Logging in...');
-                                String verificationCodeValue =
-                                    verificationCodeController.text;
-                                final credential = PhoneAuthProvider.credential(
-                                    verificationId: verificationCode,
-                                    smsCode: verificationCodeValue);
-                                await FirebaseAuth.instance
-                                    .signInWithCredential(credential);
-                                await ref
-                                    .read(sportsInterestControllerProvider
-                                        .notifier)
-                                    .getUserSelectedSportsInterest();
-                                ref
-                                    .read(showPhoneFieldProvider.notifier)
-                                    .state = true;
-                                EasyLoading.showSuccess('Login successful');
-                                if (context.mounted) {
-                                  context.goNamed(ProfileView.routeName);
+                      SizedBox(height: 64.h),
+                      Visibility(
+                        visible: !showPhoneField,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            SportsflickrTextFormField(
+                              controller: verificationCodeController,
+                              keyboardType: TextInputType.phone,
+                              labelText: 'Verification code',
+                            ),
+                            SizedBox(height: 24.h),
+                            ElevatedButton(
+                              style: primaryButtonStyle,
+                              onPressed: () async {
+                                try {
+                                  EasyLoading.show(status: 'Logging in...');
+                                  String verificationCodeValue =
+                                      verificationCodeController.text;
+                                  final credential =
+                                      PhoneAuthProvider.credential(
+                                          verificationId: verificationCode,
+                                          smsCode: verificationCodeValue);
+                                  await FirebaseAuth.instance
+                                      .signInWithCredential(credential);
+                                  await ref
+                                      .read(sportsInterestControllerProvider
+                                          .notifier)
+                                      .getUserSelectedSportsInterest();
+                                  ref
+                                      .read(showPhoneFieldProvider.notifier)
+                                      .state = true;
+                                  EasyLoading.showSuccess('Login successful');
+                                  if (context.mounted) {
+                                    context.goNamed(ProfileView.routeName);
+                                  }
+                                } catch (e) {
+                                  if (kDebugMode) {
+                                    log('error for login: $e');
+                                  }
                                 }
-                              } catch (e) {
-                                if (kDebugMode) {
-                                  print('error for login: $e');
-                                }
-                              }
-                            },
-                            child: const Text('Login'),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
+                              },
+                              child: const Text('Login'),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
       ),

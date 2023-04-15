@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -93,7 +95,7 @@ class UpdateEmailView extends ConsumerWidget {
                         EasyLoading.showError(
                             FirebaseErrorHelper.getErrorMessage(e));
                       } catch (error) {
-                        print(error.toString());
+                        log(error.toString());
                         EasyLoading.dismiss();
                         EasyLoading.showError('Something went wrong');
                       }

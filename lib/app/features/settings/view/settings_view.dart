@@ -6,7 +6,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sportsflickr/app/core/general_widgets/sportsflickr_appbar.dart';
 import 'package:sportsflickr/app/core/theme/theme.dart';
 import 'package:sportsflickr/app/features/login/providers/login_providers.dart';
-import 'package:sportsflickr/app/features/register/providers/register_providers.dart';
 import 'package:sportsflickr/app/features/register/view/register_view.dart';
 import 'package:sportsflickr/app/features/settings/view/about_view.dart';
 import 'package:sportsflickr/app/features/settings/view/change_password_view.dart';

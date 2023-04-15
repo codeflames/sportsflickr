@@ -1,14 +1,10 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sportsflickr/app/features/buddies/view/buddies_view.dart';
 import 'package:sportsflickr/app/features/discover/view/discover_view.dart';
-import 'package:sportsflickr/app/features/forgot_password/view/forgot_password_view.dart';
 import 'package:sportsflickr/app/features/login/view/login_view.dart';
 import 'package:sportsflickr/app/features/profile/view/profile_view.dart';
-import 'package:sportsflickr/app/features/register/providers/register_providers.dart';
 import 'package:sportsflickr/app/features/register/view/select_sport_interests.dart';
 import 'package:sportsflickr/app/features/register/view/phone_code_sent.dart';
 import 'package:sportsflickr/app/features/register/view/register_view.dart';
@@ -36,7 +32,7 @@ final routerProvider = Provider<GoRouter>(
       initialLocation: RegisterView.routeName,
       navigatorKey: _navigatorKey,
       debugLogDiagnostics: true,
-      redirect: (context, state) {},
+      // redirect: (context, state) {},
       routes: [
         GoRoute(
             path: RegisterView.routeName,
@@ -45,7 +41,7 @@ final routerProvider = Provider<GoRouter>(
         GoRoute(
             path: SelectSportsInterestPage.routeName,
             name: SelectSportsInterestPage.routeName,
-            builder: (context, state) => SelectSportsInterestPage()),
+            builder: (context, state) => const SelectSportsInterestPage()),
         GoRoute(
             path: PhoneCodeSentSentPage.routeName,
             name: PhoneCodeSentSentPage.routeName,
@@ -54,10 +50,6 @@ final routerProvider = Provider<GoRouter>(
             path: LoginView.routeName,
             name: LoginView.routeName,
             builder: (context, state) => LoginView()),
-        GoRoute(
-            path: ForgotPasswordView.routeName,
-            name: ForgotPasswordView.routeName,
-            builder: (context, state) => const ForgotPasswordView()),
         ShellRoute(
           builder: (context, state, child) => MainView(child: child),
           navigatorKey: _shellNavigatorKey,

@@ -53,32 +53,60 @@ class MainViewState extends ConsumerState<MainView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        // appBar: AppBar(),
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _calculateSelectedIndex(context),
-          type: BottomNavigationBarType.fixed,
-          onTap: onTap, // onTap: (value) => onTap(value),
-          items: const [
-            BottomNavigationBarItem(
-                icon: Icon(Icons.account_circle_outlined),
-                activeIcon:
-                    Icon(Icons.account_circle_rounded, color: five36BE5),
-                label: 'Profile'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.people_outline),
-                activeIcon: Icon(Icons.people_rounded, color: five36BE5),
-                label: 'Buddies'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.explore_outlined),
-                activeIcon: Icon(Icons.explore_rounded, color: five36BE5),
-                label: 'Discover'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.settings_outlined),
-                activeIcon: Icon(Icons.settings_rounded, color: five36BE5),
-                label: 'Settings'),
-          ],
-        ),
-        body: widget.child);
+    return WillPopScope(
+      onWillPop: () async {
+        bool? returnValue;
+        await showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text('Are you sure?'),
+                content: const Text('Do you want to exit the app?'),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('No')),
+                  TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text('Yes')),
+                ],
+              );
+            }).then((value) {
+          if (value == true) {
+            returnValue = true;
+          } else {
+            returnValue = false;
+          }
+        });
+        return returnValue!;
+      },
+      child: Scaffold(
+          // appBar: AppBar(),
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: _calculateSelectedIndex(context),
+            type: BottomNavigationBarType.fixed,
+            onTap: onTap, // onTap: (value) => onTap(value),
+            items: const [
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.account_circle_outlined),
+                  activeIcon:
+                      Icon(Icons.account_circle_rounded, color: five36BE5),
+                  label: 'Profile'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.people_outline),
+                  activeIcon: Icon(Icons.people_rounded, color: five36BE5),
+                  label: 'Buddies'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.explore_outlined),
+                  activeIcon: Icon(Icons.explore_rounded, color: five36BE5),
+                  label: 'Discover'),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.settings_outlined),
+                  activeIcon: Icon(Icons.settings_rounded, color: five36BE5),
+                  label: 'Settings'),
+            ],
+          ),
+          body: widget.child),
+    );
   }
 }

@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 class FirebaseErrorHelper {
   static String getErrorMessage(FirebaseAuthException error) {
@@ -37,8 +40,10 @@ class FirebaseErrorHelper {
       case 'requires-recent-login':
         return 'This action requires you to log out and log in again.';
       default:
-        print(error.code);
-        print(error.stackTrace);
+        if (kDebugMode) {
+          log(error.code);
+          log(error.stackTrace.toString());
+        }
         return 'An unknown error occurred. Please try again later.';
     }
   }

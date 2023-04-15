@@ -6,7 +6,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sportsflickr/app/core/api_service/file_picker_service.dart';
-import 'package:sportsflickr/app/features/register/providers/register_providers.dart';
 
 final profileControllerProvider = Provider<ProfileController>((ref) {
   return ProfileController(ref);
